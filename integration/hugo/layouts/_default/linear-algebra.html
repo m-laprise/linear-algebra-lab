@@ -1,0 +1,17 @@
+{{- define "main" -}}
+{{- $lab := site.Data.linear_algebra -}}
+{{- range $lab.css -}}
+<link rel="stylesheet" href="{{ . | relURL }}">
+{{- end -}}
+<div id="linear-algebra-root"></div>
+<noscript><p>This interactive dashboard requires JavaScript. <a href="https://github.com/m-laprise/linear-algebra-lab">Read the source and documentation on GitHub.</a></p></noscript>
+<script type="module" src="{{ $lab.entry | relURL }}"></script>
+<script>
+  document.querySelectorAll('#navbar-main a.nav-link').forEach(function (link) {
+    if (link.getAttribute('href') === '{{ "linear-algebra/" | relURL }}') {
+      link.classList.add('active');
+      link.setAttribute('aria-current', 'page');
+    }
+  });
+</script>
+{{- end -}}

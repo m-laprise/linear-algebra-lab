@@ -1,0 +1,30 @@
+name: linear-algebra-lab
+services:
+  lab:
+    build: .
+    image: linear-algebra-lab-lab
+    user: "${LAB_UID:-1000}:${LAB_GID:-1000}"
+    working_dir: /workspace
+    ports:
+      - "127.0.0.1:5173:5173"
+    volumes:
+      - .:/workspace
+      - dependencies:/workspace/node_modules
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    shm_size: 1gb
+    init: true
+  init-deps:
+    image: linear-algebra-lab-lab
+    profiles: [tools]
+    user: "0:0"
+    volumes:
+      - dependencies:/workspace/node_modules
+    network_mode: none
+    cap_drop: [ALL]
+    cap_add: [CHOWN]
+    security_opt: [no-new-privileges:true]
+    command:
+      [chown, -R, "${LAB_UID:-1000}:${LAB_GID:-1000}", /workspace/node_modules]
+volumes:
+  dependencies:

@@ -1,0 +1,40 @@
+name: Dashboard checks
+on:
+  push:
+    paths-ignore: ["docs/**", "README.md"]
+  pull_request:
+    paths-ignore: ["docs/**", "README.md"]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Match container user to checkout ownership
+        run: |
+          echo "LAB_UID=$(id -u)" >> "$GITHUB_ENV"
+          echo "LAB_GID=$(id -g)" >> "$GITHUB_ENV"
+      - name: Build development container
+        run: docker compose build
+      - name: Prepare dependency volume
+        run: docker compose run --rm init-deps
+      - name: Check independent fixtures and exact algebra
+        run: |
+          docker compose run --rm lab python3 scripts/generate-fixtures.py
+          git diff --exit-code -- tests/fixtures/sympy.json
+          docker compose run --rm lab npm test
+      - name: Build static application
+        run: docker compose run --rm lab npm run build
+      - name: Test three browser engines
+        run: docker compose run --rm -e CI=true lab npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-results
+          path: test-results/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: static-dashboard
+          path: dist/

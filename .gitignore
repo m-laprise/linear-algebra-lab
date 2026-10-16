@@ -1,0 +1,10 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+.preview/
+.env
+.DS_Store
+*.tsbuildinfo
+.preview-*.log
+.preview-*.json
