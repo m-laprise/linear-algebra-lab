@@ -211,6 +211,9 @@ test("inverse applies its own matrix and input, with exact fractions and undefin
   );
   await page.getByLabel("Named matrix example").selectOption("dependent");
   await expect(operation).toContainText("singular");
+  await expect(
+    page.getByText("The plots show A⁻¹", { exact: false }),
+  ).toHaveCount(0);
   await expect(page.getByTestId("rank")).toHaveCount(0);
   await expect(
     page.getByRole("region", { name: "Output space", exact: true }),

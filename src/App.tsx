@@ -279,7 +279,7 @@ function Matrices({ s, dispatch }: { s: State; dispatch: Dispatch }) {
             {isTranspose ? "Hide transpose" : "Show transpose"}
           </button>
         </div>
-        {(isInverse || isTranspose) && (
+        {shown && (isInverse || isTranspose) && (
           <p className="input-hint">
             The plots show {label}, calculated from this source matrix. Each
             operation retains its own input vector.

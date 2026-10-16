@@ -438,3 +438,6 @@ The mathematical tests pass, including cases that distinguish A, A⁻¹, and A�
 [2026-10-16T15:46:13-04:00] Assistant
 All 354 unit tests and 49 browser tests pass across Chromium, Firefox, and WebKit. The refreshed Hugo preview also passes its navigation and integration checks. I’m finishing the visual review and updating the release checklist; the academic website remains unchanged.
 
+[2026-10-16T15:47:25-04:00] Assistant
+The revised dashboard is ready to review at [the Hugo preview](http://localhost:5180/linear-algebra/). The inverse view now plots A⁻¹ itself; transpose has its own clearly labeled matrix and statistics. The remaining check is GitHub CI for the application repository.
+
