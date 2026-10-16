@@ -441,3 +441,23 @@ All 354 unit tests and 49 browser tests pass across Chromium, Firefox, and WebKi
 [2026-10-16T15:47:25-04:00] Assistant
 The revised dashboard is ready to review at [the Hugo preview](http://localhost:5180/linear-algebra/). The inverse view now plots A⁻¹ itself; transpose has its own clearly labeled matrix and statistics. The remaining check is GitHub CI for the application repository.
 
+[2026-10-16T15:48:41-04:00] Assistant
+The shear check confirms the distinction: with input (1, 1), A gives (2, 1), A⁻¹ gives (0, 1), and Aᵀ gives (1, 2). Those cases are also in the human release checklist. GitHub is still building its test container.
+
+[2026-10-16T15:50:19-04:00] Assistant
+GitHub’s clean-container build and mathematical checks have passed; the browser run is still in progress. The preview is ready, and the remaining human checks cover touch interaction, screen-reader use, and 3D legibility.
+
+[2026-10-16T15:51:04-04:00] Assistant
+Updated the [Hugo preview](http://localhost:5180/linear-algebra/).
+
+- Removed slogans and added explanatory paragraphs to both tabs.
+- Moved the OLS toggle below the dashboard.
+- Reset preserves the active tab; named examples remain selected.
+- Basis coordinates remain explicitly read-only.
+
+Inverse now displays A⁻¹’s own matrix, columns, transformed unit shape, statistics, and editable input. Previously, it plotted A with a recovery overlay. Transpose calculations were correct; its display now clearly identifies Aᵀ and its statistics.
+
+**354 unit tests and 49 browser tests pass**, with [GitHub CI passing](https://github.com/m-laprise/linear-algebra-lab/actions/runs/38957499339).
+
+Changes are pushed to the application repository. The academic website remains unchanged. Please review the preview and let me know whether to proceed with website integration or revise further.
+
