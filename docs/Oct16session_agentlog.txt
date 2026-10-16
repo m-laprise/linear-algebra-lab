@@ -376,3 +376,20 @@ All 40 browser checks now pass across Chromium, Firefox, and WebKit, including t
 [2026-10-16T15:16:39-04:00] Assistant
 The final Hugo preview is ready, and all checks pass. I’m saving the implementation to the public GPL repository now. I’ll then stop for your feedback before making or publishing changes to the academic website.
 
+[2026-10-16T15:17:38-04:00] Assistant
+The public repository is available at [m-laprise/linear-algebra-lab](https://github.com/m-laprise/linear-algebra-lab). You can inspect the [Hugo preview](http://localhost:5180/linear-algebra/) now. GitHub is repeating the checks in a clean container; the academic website remains unchanged.
+
+[2026-10-16T15:19:23-04:00] Assistant
+The clean GitHub run has passed the mathematical checks and production build. Its browser checks are finishing; the preview and human release checklist are ready for review.
+
+[2026-10-16T15:20:31-04:00] Assistant
+Built and ready for review.
+
+- [Open the Hugo preview](http://localhost:5180/linear-algebra/) — includes your header and active **Teaching material** tab.
+- [Public GPL-3.0 repository](https://github.com/m-laprise/linear-algebra-lab).
+- [Human release checklist](https://github.com/m-laprise/linear-algebra-lab/blob/main/docs/HUMAN_RELEASE_CHECKLIST.md).
+
+**351 unit tests and 40 browser checks pass**, including automated accessibility checks. GitHub CI and the Hugo build also pass.
+
+The academic website remains unchanged, as requested. Please try the dashboard and tell me what to revise, or whether you approve website integration and deployment.
+
