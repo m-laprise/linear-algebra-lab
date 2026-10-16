@@ -17,7 +17,7 @@ for (const [name, engine] of Object.entries({ chromium, firefox, webkit })) {
       errors.push(`${r.status()} ${r.url()}`);
   });
   await page.goto(url);
-  await page.getByRole("heading", { name: "Linear Algebra Lab." }).waitFor();
+  await page.getByRole("heading", { name: "Linear Algebra Lab" }).waitFor();
   const nav = page.locator("#navbar-main");
   assert.equal(await nav.count(), 1);
   const tab = nav.getByRole("link", { name: "Teaching material", exact: true });
@@ -56,7 +56,7 @@ for (const [name, engine] of Object.entries({ chromium, firefox, webkit })) {
     "2",
   );
   await page.reload();
-  await page.getByRole("heading", { name: "Linear Algebra Lab." }).waitFor();
+  await page.getByRole("heading", { name: "Linear Algebra Lab" }).waitFor();
   if (name === "chromium")
     await page.screenshot({
       path: ".preview/screenshots/hugo-desktop.png",

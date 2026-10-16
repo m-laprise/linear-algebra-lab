@@ -4,6 +4,40 @@ export interface Preset {
   label: string;
   values: number[][];
 }
+export const selectedPreset = (choices: Preset[], values: number[][]) =>
+  choices.find(
+    (p) =>
+      p.values.length === values.length &&
+      p.values.every(
+        (row, i) =>
+          row.length === values[i].length &&
+          row.every((value, j) => value === values[i][j]),
+      ),
+  )?.id ?? "custom";
+export function basisPresets(d: number): Preset[] {
+  const standard = initialMatrix(d, d);
+  const choices: Preset[] = [
+    { id: "standard", label: "Standard basis", values: standard },
+    {
+      id: "scaled",
+      label: "Scaled basis",
+      values: standard.map((row) => row.map((x) => 2 * x)),
+    },
+  ];
+  if (d > 1) {
+    const oblique = initialMatrix(d, d);
+    oblique[0][1] = 1;
+    choices.push(
+      { id: "oblique", label: "Oblique basis", values: oblique },
+      {
+        id: "dependent",
+        label: "Dependent vectors (not a basis)",
+        values: standard.map((row) => row.map(() => 1)),
+      },
+    );
+  }
+  return choices;
+}
 export function presets(m: number, n: number): Preset[] {
   const eye = initialMatrix(m, n);
   const p: Preset[] = [

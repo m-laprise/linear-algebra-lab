@@ -16,6 +16,50 @@ async function center(locator: Locator) {
 test.beforeEach(async ({ page }) => {
   await page.goto("/linear-algebra/");
 });
+test("named examples persist and manual edits identify custom matrices", async ({
+  page,
+}) => {
+  const menu = page.getByLabel("Named matrix example");
+  await expect(menu).toHaveValue("identity");
+  await menu.selectOption("shear");
+  await expect(menu).toHaveValue("shear");
+  await edit(page, "x coordinate 1", "2");
+  await expect(menu).toHaveValue("shear");
+  await edit(page, "A row 1 column 2", "1.5");
+  await expect(menu).toHaveValue("custom");
+  await page.getByRole("tab", { name: "Bases", exact: true }).click();
+  const basisMenu = page.getByLabel("Named basis example");
+  await basisMenu.selectOption("oblique");
+  await expect(basisMenu).toHaveValue("oblique");
+  await edit(page, "v coordinate 1", "3");
+  await expect(basisMenu).toHaveValue("oblique");
+  await edit(page, "B row 1 column 2", "1.5");
+  await expect(basisMenu).toHaveValue("custom");
+});
+test("reset preserves the active tab and OLS toggle follows the main panel", async ({
+  page,
+}) => {
+  await page.getByRole("tab", { name: "Bases", exact: true }).click();
+  await page.getByLabel("Basis dimension").selectOption("3");
+  await page.getByLabel("Show OLS example").check();
+  expect(
+    await page
+      .locator(".ols-toggle")
+      .evaluate((el) => el.previousElementSibling?.id),
+  ).toBe("bases-panel");
+  expect(
+    await page
+      .locator(".ols-toggle")
+      .evaluate((el) => el.nextElementSibling?.getAttribute("aria-label")),
+  ).toBe("OLS example");
+  await page.getByRole("button", { name: "Reset all" }).click();
+  await expect(
+    page.getByRole("tab", { name: "Bases", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByLabel("Basis dimension")).toHaveValue("2");
+  await expect(page.getByLabel("Named basis example")).toHaveValue("standard");
+  await expect(page.getByLabel("Show OLS example")).not.toBeChecked();
+});
 test("accessible controls and math in primary, basis, and OLS views", async ({
   page,
 }) => {
@@ -28,6 +72,13 @@ test("accessible controls and math in primary, basis, and OLS views", async ({
           .analyze()
       ).violations,
     ).toEqual([]);
+  await check();
+  await page.getByRole("button", { name: "Show inverse", exact: true }).click();
+  await check();
+  await page
+    .getByRole("button", { name: "Show transpose", exact: true })
+    .click();
+  await page.getByText("Entry correspondence", { exact: true }).click();
   await check();
   await page.getByRole("tab", { name: "Matrices", exact: true }).focus();
   await page.keyboard.press("ArrowRight");
@@ -42,16 +93,16 @@ test("initial state, sources, reset, and isolated optional views", async ({
   page,
 }) => {
   await expect(
-    page.getByRole("heading", { name: "Linear Algebra Lab." }),
+    page.getByRole("heading", { name: "Linear Algebra Lab" }),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "View source on GitHub" }),
   ).toHaveAttribute("href", "https://github.com/m-laprise/linear-algebra-lab");
-  await expect(page.getByRole("region", { name: "Inverse view" })).toHaveCount(
+  await expect(page.getByRole("region", { name: "Inverse check" })).toHaveCount(
     0,
   );
   await expect(
-    page.getByRole("heading", { name: "Rows become columns" }),
+    page.getByRole("heading", { name: "Transpose entries" }),
   ).toHaveCount(0);
   await expect(page.getByRole("region", { name: "OLS example" })).toHaveCount(
     0,
@@ -73,7 +124,7 @@ test("initial state, sources, reset, and isolated optional views", async ({
     page.getByLabel("A row 1 column 1", { exact: true }),
   ).toHaveValue("1");
   await expect(page.getByLabel("Show OLS example")).not.toBeChecked();
-  await expect(page.getByRole("region", { name: "Inverse view" })).toHaveCount(
+  await expect(page.getByRole("region", { name: "Inverse check" })).toHaveCount(
     0,
   );
 });
@@ -113,36 +164,117 @@ test("all nine shapes have correct spaces, columns, determinant and transpose di
         .click();
     }
 });
-test("inverse is exact, recovers x, and explains singular and rectangular cases", async ({
+test("inverse applies its own matrix and input, with exact fractions and undefined cases", async ({
   page,
 }) => {
   await edit(page, "A row 1 column 1", "3");
   await edit(page, "A row 2 column 2", "3");
   await page.getByRole("button", { name: "Show inverse", exact: true }).click();
-  await expect(
-    page.getByRole("region", { name: "Inverse view" }),
-  ).toContainText("Recovered x = (1, 1/2)");
-  await expect(
-    page
-      .getByRole("region", { name: "Inverse view" })
-      .locator("annotation")
-      .first(),
-  ).toContainText("frac{1}{3}");
-  await expect(page.locator('[data-arrow="recovered"]')).toHaveAttribute(
+  const operation = page.getByRole("region", { name: "Displayed operation" });
+  await expect(operation).toContainText("Inverse transformation");
+  await expect(operation.locator("annotation").nth(1)).toContainText(
+    "frac{1}{3}",
+  );
+  await expect(page.getByTestId("rank")).toHaveText("2");
+  await expect(page.getByTestId("determinant")).toHaveText("1/9");
+  await expect(page.locator('[data-arrow="output"]')).toHaveAttribute(
     "data-coordinates",
-    "(1, 1/2)",
+    "(1/3, 1/6)",
+  );
+  for (const [j, value] of ["(1/3, 0)", "(0, 1/3)"].entries()) {
+    await expect(page.locator(`[data-arrow="column-${j}"]`)).toHaveAttribute(
+      "data-coordinates",
+      value,
+    );
+    await expect(page.getByTestId(`column-${j}-endpoint`)).not.toHaveAttribute(
+      "role",
+      "button",
+    );
+  }
+  await edit(page, "y coordinate 1", "2");
+  await edit(page, "y coordinate 2", "3");
+  await expect(page.locator('[data-arrow="output"]')).toHaveAttribute(
+    "data-coordinates",
+    "(2/3, 1)",
+  );
+  await expect(page.getByTestId("inverse-recovered")).toHaveText(
+    "Recovered y = (2, 3)",
+  );
+  await page.getByRole("button", { name: "Hide inverse", exact: true }).click();
+  await expect(page.getByTestId("determinant")).toHaveText("9");
+  await expect(page.getByLabel("x coordinate 1", { exact: true })).toHaveValue(
+    "1",
+  );
+  await page.getByRole("button", { name: "Show inverse", exact: true }).click();
+  await expect(page.getByLabel("y coordinate 1", { exact: true })).toHaveValue(
+    "2",
   );
   await page.getByLabel("Named matrix example").selectOption("dependent");
+  await expect(operation).toContainText("singular");
+  await expect(page.getByTestId("rank")).toHaveCount(0);
   await expect(
-    page.getByRole("region", { name: "Inverse view" }),
-  ).toContainText("singular");
-  await expect(page.getByTestId("rank")).toHaveText("1");
-  await expect(page.locator('[data-arrow="recovered"]')).toHaveCount(0);
+    page.getByRole("region", { name: "Output space", exact: true }),
+  ).toHaveCount(0);
   await shape(page, 2, 3);
   await page.getByRole("button", { name: "Show inverse", exact: true }).click();
+  await expect(operation).toContainText("rectangular");
   await expect(
-    page.getByRole("region", { name: "Inverse view" }),
-  ).toContainText("rectangular");
+    page.getByRole("region", { name: "Output space", exact: true }),
+  ).toHaveCount(0);
+});
+test("shear, inverse, and transpose use matching columns, products, and unit shapes", async ({
+  page,
+}) => {
+  await page.getByLabel("Named matrix example").selectOption("shear");
+  const fixtures = [
+    { input: "x", output: "(2, 1)", columns: ["(1, 0)", "(1, 1)"] },
+    {
+      input: "y",
+      button: "Show inverse",
+      output: "(0, 1)",
+      columns: ["(1, 0)", "(-1, 1)"],
+    },
+    {
+      input: "u",
+      button: "Show transpose",
+      output: "(1, 2)",
+      columns: ["(1, 1)", "(0, 1)"],
+    },
+  ];
+  const output = page.getByRole("region", {
+    name: "Output space",
+    exact: true,
+  });
+  for (const fixture of fixtures) {
+    if (fixture.button)
+      await page
+        .getByRole("button", { name: fixture.button, exact: true })
+        .click();
+    await edit(page, `${fixture.input} coordinate 1`, "1");
+    await edit(page, `${fixture.input} coordinate 2`, "1");
+    await expect(output.locator('[data-arrow="output"]')).toHaveAttribute(
+      "data-coordinates",
+      fixture.output,
+    );
+    for (const [j, value] of fixture.columns.entries()) {
+      const column = output.locator(`[data-arrow="column-${j}"]`);
+      await expect(column).toHaveAttribute("data-coordinates", value);
+      // Edges from the origin are the transformed standard basis vectors.
+      const edge = output.getByTestId("unit-image").locator("line").nth(j);
+      for (const attribute of ["x1", "y1", "x2", "y2"])
+        await expect(edge).toHaveAttribute(
+          attribute,
+          (await column.locator("line").first().getAttribute(attribute))!,
+        );
+    }
+    await expect(
+      page.getByLabel("A row 1 column 2", { exact: true }),
+    ).toHaveValue("1");
+    await expect(
+      page.getByLabel("A row 2 column 1", { exact: true }),
+    ).toHaveValue("0");
+    await expect(page.getByLabel("Named matrix example")).toHaveValue("shear");
+  }
 });
 test("entry validation preserves math state; keyboard values remain on the grid", async ({
   page,
@@ -280,6 +412,20 @@ test("basis edits keep v fixed; singular sets never invent coordinates", async (
     "data-coordinates",
     "(1, 1)",
   );
+  await page.getByLabel("Named basis example").selectOption("standard");
+  await edit(page, "B row 1 column 1", "3");
+  await edit(page, "B row 2 column 2", "3");
+  await expect(page.locator('[data-arrow="coordinates"]')).toHaveAttribute(
+    "data-coordinates",
+    "(2/3, 1/3)",
+  );
+  await expect(
+    page.getByRole("region", { name: "Basis coordinate space", exact: true }),
+  ).toContainText("Read-only coefficients");
+  await expect(page.getByTestId("coordinates-endpoint")).not.toHaveAttribute(
+    "role",
+    "button",
+  );
   await page.getByLabel("Named basis example").selectOption("dependent");
   await expect(page.getByText("Not a basis", { exact: true })).toBeVisible();
   await expect(page.locator('[data-arrow="coordinates"]')).toHaveCount(0);
@@ -351,6 +497,7 @@ test("transpose entry mapping and independent probe preserve the original input"
   await page
     .getByRole("button", { name: "Show transpose", exact: true })
     .click();
+  await page.getByText("Entry correspondence", { exact: true }).click();
   await page
     .getByRole("button", { name: "original entry row 2 column 3", exact: true })
     .click();
@@ -384,6 +531,27 @@ test("visual review snapshots", async ({ page }, testInfo) => {
     path: "test-results/dashboard-2d.png",
     fullPage: true,
   });
+  await page.getByLabel("Named matrix example").selectOption("shear");
+  await page.getByRole("button", { name: "Show inverse", exact: true }).click();
+  await page.screenshot({
+    path: "test-results/dashboard-inverse.png",
+    fullPage: true,
+  });
+  await page
+    .getByRole("button", { name: "Show transpose", exact: true })
+    .click();
+  await page.getByText("Entry correspondence", { exact: true }).click();
+  await page.screenshot({
+    path: "test-results/dashboard-transpose.png",
+    fullPage: true,
+  });
+  await page.getByRole("tab", { name: "Bases", exact: true }).click();
+  await page.getByLabel("Named basis example").selectOption("oblique");
+  await page.screenshot({
+    path: "test-results/dashboard-bases.png",
+    fullPage: true,
+  });
+  await page.getByRole("tab", { name: "Matrices", exact: true }).click();
   await shape(page, 3, 3);
   await page.getByLabel("Named matrix example").selectOption("shear");
   await page.screenshot({

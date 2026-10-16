@@ -10,11 +10,14 @@ Status: **awaiting human review**. Automated tests and agent screenshot inspecti
 - [ ] Rotate each 3D view, then move each x/y/z handle. Check only the intended coordinate changes and the camera stays fixed during the drag. Rotate again if an axis is nearly edge-on.
 - [ ] Inspect 3D depth, grid, span plane, unit cube, vector labels, and overlapping objects from several angles. Confirm that no label or hidden endpoint suggests a false coordinate.
 - [ ] Set a 3×3 matrix and vector entirely to 3. Confirm the output remains (27, 27, 27), with a continuation marker at the bounded view; no snapping or truncation of calculated values.
-- [ ] Show transpose for a 2×3 matrix. Trace original entries to the swapped positions, check the reversed space dimensions, and confirm hiding it restores the original probe.
-- [ ] Show inverse for diag(3, 3). Check the exact thirds and the recovered vector. Try a singular square and a rectangular matrix; check the distinct explanations.
-- [ ] In Bases, choose the oblique basis and edit it while holding v fixed. Check reconstruction, fractional coefficients, and the dependent-set message. Confirm basis-coordinate space is not mistaken for geometric space.
-- [ ] OLS begins hidden. Check ŷ lies in the column plane and the residual runs from ŷ to y, perpendicular to the plane. Opening/closing it must preserve the main dashboard.
-- [ ] Reset all restores the initial 2D identity and probe, Matrices tab, hidden inverse/transpose/OLS, and default cameras.
+- [ ] Select Shear, A = [[1, 1], [0, 1]]. With input (1, 1), compare A, A⁻¹, and Aᵀ: the outputs must be (2, 1), (0, 1), and (1, 2). Check each readout, column vector, and gold unit shape agrees with the selected operator. Source A stays unchanged; derived columns are read-only.
+- [ ] Show transpose for a 2×3 matrix. Expand Entry correspondence and trace original entries to the swapped positions. Check reversed space dimensions, three output rows, two columns, and undefined determinant. Hiding it restores the original input; showing it again restores u.
+- [ ] Show inverse for diag(3, 3). Check inverse columns (1/3, 0) and (0, 1/3), determinant 1/9, and output (1/3, 1/6) for y = (1, 1/2). Edit y and confirm A(A⁻¹y) recovers it. Try singular and rectangular matrices; check distinct explanations and absence of inverse plots.
+- [ ] In Bases, choose the oblique basis and edit it while holding v fixed. Check reconstruction, fractional coefficients, and the dependent-set message. The right panel must be clearly read-only, with coefficient axes c₁, c₂, c₃. B = diag(3, 3), v = (2, 1) must yield (2/3, 1/3), without snapping.
+- [ ] Named-example menus retain the selected name when editing an input vector, and show Custom after an unmatched matrix edit. Check both tabs.
+- [ ] OLS begins hidden; its toggle sits immediately below the main dashboard and above the example. Check ŷ lies in the column plane and the residual runs from ŷ to y, perpendicular to the plane. Opening/closing it must preserve the main dashboard.
+- [ ] Reset all preserves the active Matrices or Bases tab while restoring initial 2D values, hidden inverse/transpose/OLS, and default cameras. Try resetting from both tabs.
+- [ ] Read each tab's introductory paragraph and the operation labels. Confirm that source A, the displayed operator, and calculated basis coordinates are unambiguous.
 - [ ] Test keyboard navigation (including tab arrow keys), focus visibility, a screen reader, and touch dragging on an actual mobile device. Values and labels must remain understandable without color.
 - [ ] Test desktop and mobile layouts in Chrome, Firefox, and Safari. Inspect equations and controls for clipping at narrow widths and browser zoom 200%.
 - [ ] On the Hugo preview, verify the existing navigation, active Teaching material tab, mobile menu, source link, and exact explanatory caption.

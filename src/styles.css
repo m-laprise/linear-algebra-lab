@@ -151,19 +151,31 @@
   padding-bottom: 8px;
   font-size: 13px;
 }
-.utility-controls label {
+.ols-toggle label {
   display: flex;
   align-items: center;
   gap: 8px;
   margin: 0;
 }
-.utility-controls input {
+.ols-toggle input {
   accent-color: var(--teal);
   width: 16px;
   height: 16px;
 }
 .lab .reset {
   background: transparent;
+}
+.lab .tab-description {
+  max-width: 1080px;
+  margin: 0 0 24px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+.ols-toggle {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
 }
 .workspace {
   display: grid;
@@ -368,6 +380,57 @@
 }
 .visual-area {
   min-width: 0;
+}
+.operator-summary {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 18px;
+}
+.lab .operator-summary h2 {
+  font-size: 18px;
+  margin-bottom: 0;
+}
+.operator-values {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(200px, 1.4fr);
+  align-items: center;
+  gap: 24px;
+}
+.operator-values .stats {
+  border: 0;
+  padding: 0;
+}
+.lab .operator-summary p {
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+.lab .inverse-check {
+  padding: 18px 22px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.transpose-details {
+  margin-top: 18px;
+  padding: 16px 22px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.transpose-details summary {
+  cursor: pointer;
+}
+.transpose-details .derived-card {
+  border: 0;
+}
+.transpose-details .transpose-pair {
+  justify-content: flex-start;
+  gap: 40px;
+}
+.transpose-details .readout-matrix button {
+  min-width: 38px;
 }
 .map-heading {
   display: flex;
@@ -574,7 +637,7 @@
 }
 .ols-panel {
   padding: 28px;
-  margin-top: 28px;
+  margin-top: 16px;
   background: #f0f3f8;
   border: 1px solid #dce1eb;
   border-radius: 12px;
@@ -645,6 +708,13 @@
   }
 }
 @media (max-width: 700px) {
+  .operator-values {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .operator-summary .map-heading {
+    flex-wrap: wrap;
+  }
   .lab-header {
     flex-direction: column;
     align-items: flex-start;
@@ -652,11 +722,6 @@
   }
   .top-controls {
     flex-wrap: wrap;
-  }
-  .utility-controls {
-    width: 100%;
-    justify-content: space-between;
-    order: -1;
   }
   .workspace {
     grid-template-columns: 1fr;

@@ -26,6 +26,7 @@ export interface State {
   a: number[][];
   x: number[];
   transposeX: number[];
+  inverseY: number[];
   b: number[][];
   v: number[];
   operation: Operation;
@@ -38,6 +39,7 @@ export const initialState = (): State => ({
   a: initialMatrix(2, 2),
   x: initialVector(2),
   transposeX: initialVector(2),
+  inverseY: initialVector(2),
   b: initialMatrix(2, 2),
   v: [2, 1],
   operation: "original",
@@ -52,13 +54,14 @@ export type Action =
   | { type: "patch"; value: Partial<State> };
 export function reducer(s: State, action: Action): State {
   if (action.type === "reset")
-    return { ...initialState(), resetKey: s.resetKey + 1 };
+    return { ...initialState(), tab: s.tab, resetKey: s.resetKey + 1 };
   if (action.type === "shape")
     return {
       ...s,
       a: initialMatrix(action.m, action.n),
       x: initialVector(action.n),
       transposeX: initialVector(action.m),
+      inverseY: initialVector(action.m),
       operation: "original",
     };
   if (action.type === "basisDimension")

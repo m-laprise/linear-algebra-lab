@@ -52,6 +52,11 @@ it("shape transitions preserve unrelated state and reset all dependent dimension
     ...initialState(),
     resetKey: 1,
   });
+  expect(reducer({ ...s, tab: "bases" }, { type: "reset" })).toEqual({
+    ...initialState(),
+    tab: "bases",
+    resetKey: 1,
+  });
 });
 it("clips segments and faces to actual coordinate bounds without changing direction", () => {
   expect(clipSegment([0, 0], [9, 3])).toEqual([

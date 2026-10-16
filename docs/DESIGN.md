@@ -8,9 +8,9 @@ All editable coordinates and matrix entries belong to `{−3, −2.5, …, 2.5, 
 
 Reduced BigInt fractions represent all mathematical values. Gaussian elimination computes rank and inverses exactly. The determinant is defined only for square matrices. All nine matrix shapes are available. Derived matrices, coefficients, and results are never snapped to the input grid. Conversion to floating point happens only at the drawing boundary.
 
-The inverse panel shows the inverse matrix and the round trip, overlaying the recovered vector on the input. The transpose panel shows the swapped entries, spaces, and an independent probe. The editable original matrix is retained. Changing shape resets the matrix to a rectangular diagonal of ones, the probes, and the operation.
+The Matrices tab displays one operator at a time: A, A⁻¹, or Aᵀ. Its matrix readout, rank, determinant, columns, output vector, span, and transformed unit shape all use that same operator. The source A stays separately labeled and editable. Derived columns are read-only. Each operation retains its own editable input: x, y, or u. The inverse check shows A(A⁻¹y) = y; singular and rectangular matrices show an explanation without an inverse plot. Transpose entry correspondence can be expanded to trace Aᵢⱼ to (Aᵀ)ⱼᵢ. Changing shape resets the matrix to a rectangular diagonal of ones, the inputs, and the operation.
 
-The Bases tab uses `v = Bc`, with v held fixed as B changes. A dependent B is explicitly not a basis; unique coordinates are not shown. Coordinate-space arrows represent coefficients, not standard geometric coordinates.
+The Bases tab uses `v = Bc`, with v held fixed as B changes. A dependent B is explicitly not a basis; unique coordinates are not shown. The right panel is labeled read-only and its axes are c₁, c₂, c₃: it displays calculated coefficients, including exact fractions outside the editable half-unit grid. Edit B or v in the left panel to change these coefficients.
 
 OLS uses fixed X with rows `(1,−1), (1,0), (1,1)`. Fitted values, coefficients, and residuals use exact fractions. The residual arrow represents the displacement from the fitted vector to the response; its displayed coordinates are the residual itself.
 
@@ -32,4 +32,4 @@ Clipping occurs in mathematical coordinates before projection. A vector leaving 
 - `integration/hugo/`: Hugo content and layout using the site's existing base template.
 - `scripts/stage-hugo.mjs`: copy a production build into a Hugo checkout or isolated copy.
 
-The application CSS is scoped beneath `.lab` / `#linear-algebra-root`. It uses local bundled fonts for equations. No CDN is required at runtime. Reset does not reload the page. State is intentionally ephemeral and is not stored or sent anywhere.
+The application CSS is scoped beneath `.lab` / `#linear-algebra-root`. It uses local bundled fonts for equations. No CDN is required at runtime. Reset restores initial values, hidden optional views, and default cameras while preserving the active Matrices or Bases tab. Named-example menus reflect the current matrix, switching to Custom when it no longer matches an example. The OLS toggle sits below the main dashboard, immediately above the example. State is intentionally ephemeral and is not stored or sent anywhere.

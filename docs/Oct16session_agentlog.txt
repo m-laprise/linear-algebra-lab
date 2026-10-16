@@ -393,3 +393,48 @@ Built and ready for review.
 
 The academic website remains unchanged, as requested. Please try the dashboard and tell me what to revise, or whether you approve website integration and deployment.
 
+[2026-10-16T15:34:34-04:00] User
+- You've added a lot of AI-slop phrases everywhere ("Move vectors. Change a matrix. See the connection."; "Transform a vector. Combine the columns."; "One matrix, two views"; etc.) Remove that, keep clear and concise descriptions or titles only, favoring human readability. 
+- The OLS toggle should be below the main dashboard, right above where the example appears.
+- "Reset all" should not move back between Matrix and Bases tabs, it should remain in the active tab. 
+- When selecting a named example, the name does not remain selected in the Named example box. 
+- In the bases tab, the right panel is not interactive, is that on purpose? 
+- Examine critically the implementation of matrix inverse and matrix transpose visualization here, I think it is wrong. 
+- At the top of each of the Matrix and Bases tab, there should be a concise 2-3 sentence paragraph explaining the visualization and what it is meant to demonstrate.
+
+[2026-10-16T15:34:34-04:00] Assistant
+I’ll revise the wording and controls, then audit the inverse, transpose, and basis views against their equations. The right-hand basis panel is currently read-only because it shows coordinates calculated from the vector and basis; I’ll assess whether that behavior is clear and report any changes that need your decision.
+
+[2026-10-16T15:35:47-04:00] Assistant
+The inverse calculation is correct, but its visualization is incomplete: it still plots A, then overlays A⁻¹(Ax)=x. It never shows the columns or unit shape transformed by A⁻¹. The transpose plots Aᵀ correctly, but placing it beside A’s editor and statistics makes the displayed operation ambiguous.
+
+The basis panel was deliberately read-only. For example, half-unit basis entries and coefficients can produce quarter-unit coordinates for the geometric vector. Making both sides editable therefore needs a rule about which side supplies the input. These are design choices covered by your earlier request to seek feedback; I’ll continue with the wording and control fixes while you decide.
+
+[2026-10-16T15:35:47-04:00] Assistant
+For inverse and transpose, should the plots explicitly show the selected operator (A, A⁻¹, or Aᵀ), with its matrix, columns, rank/determinant, and its own editable input? A would remain clearly labeled as the source matrix.
+Options: Use explicit operation views (recommended); Keep A’s plots and add separate comparison plots.
+
+For Bases, should the right panel remain a clearly labeled calculated result, or should an edit-side switch let students edit either v or its basis coefficients? With a switch, only the chosen input would snap to half units; the calculated side would retain exact values, including quarters or values beyond ±3.
+Options: Keep calculated coordinates read-only; Add an edit-side switch.
+
+[2026-10-16T15:38:07-04:00] User
+Use explicit operation views (recommended)
+
+[2026-10-16T15:38:07-04:00] Assistant
+I’ll implement explicit operation views. Selecting inverse or transpose will show that operator’s matrix, columns, transformed unit shape, statistics, and editable input; the source matrix A will stay separately labeled. I’ll add a shear test that distinguishes all three operations, so an inverse view that accidentally plots A cannot pass.
+
+[2026-10-16T15:41:44-04:00] Assistant
+The wording, OLS-toggle placement, reset behavior, and named-example selection are updated. The revised inverse view now applies A⁻¹ to its own input and displays its columns and determinant. I’m checking those plots against non-symmetric examples and exact fractional results.
+
+[2026-10-16T15:41:44-04:00] User
+Keep calculated coordinates read-only
+
+[2026-10-16T15:43:45-04:00] Assistant
+The Bases panel will keep calculated coordinates read-only, with that stated explicitly. I’ll finish checking the revised operation views and refresh the preview for your review.
+
+[2026-10-16T15:45:30-04:00] Assistant
+The mathematical tests pass, including cases that distinguish A, A⁻¹, and Aᵀ. The browser checks now verify that each view’s columns, output vector, and transformed unit shape agree. Singular and rectangular matrices also show an explanation instead of falling back to A when inverse is selected.
+
+[2026-10-16T15:46:13-04:00] Assistant
+All 354 unit tests and 49 browser tests pass across Chromium, Firefox, and WebKit. The refreshed Hugo preview also passes its navigation and integration checks. I’m finishing the visual review and updating the release checklist; the academic website remains unchanged.
+

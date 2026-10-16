@@ -38,6 +38,7 @@ interface Props {
   unitLabel?: string;
   gridBasis?: Matrix;
   description?: string;
+  axisLabels?: string[];
 }
 type Drag =
   | { kind: "orbit"; x: number; y: number; yaw: number; pitch: number }
@@ -58,6 +59,7 @@ export function Space({
   unitLabel,
   gridBasis,
   description,
+  axisLabels = ["x", "y", "z"],
 }: Props) {
   const [angle, setAngle] = useState({ yaw: -0.95, pitch: 0.48 });
   const [selected, setSelected] = useState<string | null>(null);
@@ -287,7 +289,9 @@ export function Space({
         <span>
           {dimension === 3
             ? "Drag background to rotate"
-            : "Drag a filled endpoint"}{" "}
+            : arrows.some((a) => a.onChange)
+              ? "Drag a filled endpoint"
+              : "Calculated vectors"}{" "}
           · axes −6 to 6
         </span>
         {dimension === 3 && (
@@ -391,7 +395,7 @@ export function Space({
             <g key={i}>
               {line(a, b, `axis${i}`, "#8b9da5", 1.2)}
               <text x={end[0] + 7} y={end[1] - 7} className="axis-label">
-                {["x", "y", "z"][i]} · 6
+                {axisLabels[i]} · 6
               </text>
               <text x={start[0] - 10} y={start[1] + 15} className="tick-label">
                 −6
@@ -438,8 +442,12 @@ export function Space({
             0.14,
           ),
         )}
-        {unitShape?.edges.map(([i, j], k) =>
-          line(vertices[i], vertices[j], `unitEdge${k}`, "#ac843a", 1.8),
+        {unitShape && (
+          <g data-testid="unit-image">
+            {unitShape.edges.map(([i, j], k) =>
+              line(vertices[i], vertices[j], `unitEdge${k}`, "#ac843a", 1.8),
+            )}
+          </g>
         )}
         {[...arrows]
           .sort((a, b) => Number(a.id === selected) - Number(b.id === selected))

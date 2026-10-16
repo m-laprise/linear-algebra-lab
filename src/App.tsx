@@ -6,7 +6,6 @@ import {
   determinant,
   fromNumbers,
   identity,
-  inverse,
   multiplyVector,
   OLS_X,
   ols,
@@ -19,7 +18,8 @@ import {
   type Vector,
 } from "./math/algebra";
 import { initialState, reducer, type State, type Action } from "./state";
-import { presets } from "./presets";
+import { presets, basisPresets, selectedPreset } from "./presets";
+import { operationView } from "./math/operation";
 import { MathText } from "./components/Math";
 import { MatrixEditor, VectorEditor } from "./components/Editors";
 import { COLORS, Space, type Arrow } from "./components/Space";
@@ -126,8 +126,7 @@ function Combination({
   return (
     <section className="equation-card" aria-label="Column combination">
       <div>
-        <span className="eyebrow">One matrix, two views</span>
-        <h3>Transform a vector. Combine the columns.</h3>
+        <h3>Linear combination of columns</h3>
       </div>
       <MathText
         block
@@ -152,9 +151,10 @@ function TransposeReadout({ a }: { a: Matrix }) {
   const [cell, setCell] = useState<[number, number]>([0, 0]);
   return (
     <section className="derived-card">
-      <h3>Rows become columns</h3>
+      <h3>Transpose entries</h3>
       <p>
-        Select an entry to trace its position: a<sub>ij</sub> → a<sub>ji</sub>.
+        Select an entry to trace its position:{" "}
+        <MathText tex={"(A^{\\mathsf T})_{ji}=A_{ij}"} />.
       </p>
       <div className="transpose-pair">
         {[a, transpose(a)].map((m, index) => (
@@ -197,188 +197,226 @@ function TransposeReadout({ a }: { a: Matrix }) {
 function Matrices({ s, dispatch }: { s: State; dispatch: Dispatch }) {
   const a = fromNumbers(s.a),
     m = a.length,
-    n = a[0].length,
-    inv = inverse(a),
-    isTranspose = s.operation === "transpose",
+    n = a[0].length;
+  const operation = operationView(a, s.operation);
+  const {
+    matrix: shown,
+    symbol,
+    label,
+    input,
+    column,
+    unavailable,
+  } = operation;
+  const isTranspose = s.operation === "transpose",
     isInverse = s.operation === "inverse";
-  const shown = isTranspose ? transpose(a) : a,
-    symbol = isTranspose ? "A^{\\mathsf T}" : "A",
-    x = vector(isTranspose ? s.transposeX : s.x),
-    y = multiplyVector(shown, x);
-  const outputDim = shown.length,
-    inputDim = shown[0].length;
+  const inputValues = isTranspose ? s.transposeX : isInverse ? s.inverseY : s.x;
+  const x = vector(inputValues),
+    y = shown ? multiplyVector(shown, x) : null;
   const patch = (value: Partial<State>) => dispatch({ type: "patch", value });
+  const updateInput = (v: number[]) =>
+    patch(
+      isTranspose ? { transposeX: v } : isInverse ? { inverseY: v } : { x: v },
+    );
   const updateColumn = (j: number, v: number[]) =>
-    patch({ a: s.a.map((r, i) => r.map((x, k) => (k === j ? v[i] : x))) });
-  const inputArrows: Arrow[] = [
-    {
-      id: "input",
-      label: isTranspose ? "u" : "x",
-      value: x,
-      color: DARK,
-      onChange: (v) => patch(isTranspose ? { transposeX: v } : { x: v }),
-    },
-  ];
-  if (isInverse && inv)
-    inputArrows.push({
-      id: "recovered",
-      label: "A⁻¹(Ax)",
-      value: multiplyVector(inv, y),
-      color: GREEN,
-      dashed: true,
+    patch({
+      a: s.a.map((row, i) => row.map((value, k) => (k === j ? v[i] : value))),
     });
-  const outArrows: Arrow[] = [
-    ...columnArrows(
-      shown,
-      isTranspose ? "t" : "a",
-      isTranspose ? undefined : updateColumn,
-    ),
-    { id: "output", label: isTranspose ? "Aᵀu" : "Ax", value: y, color: DARK },
-  ];
-  const unavailable =
-    m !== n
-      ? "A is rectangular; a two-sided inverse is not defined."
-      : !inv
-        ? "A is singular (determinant 0); no inverse exists."
-        : null;
   return (
-    <>
-      <div className="workspace">
-        <aside className="controls panel">
-          <span className="eyebrow">Transformation</span>
-          <h2>Build a matrix</h2>
-          <Dimensions
-            m={m}
-            n={n}
-            onChange={(m, n) => dispatch({ type: "shape", m, n })}
-          />
-          <label className="select-label">
-            Named example
-            <select
-              aria-label="Named matrix example"
-              value=""
-              onChange={(e) => {
-                const p = presets(m, n).find((p) => p.id === e.target.value);
-                if (p) patch({ a: p.values });
-              }}
-            >
-              <option value="" disabled>
-                Choose an example…
+    <div className="workspace">
+      <aside className="controls panel">
+        <h2>Source matrix A</h2>
+        <Dimensions
+          m={m}
+          n={n}
+          onChange={(m, n) => dispatch({ type: "shape", m, n })}
+        />
+        <label className="select-label">
+          Named example
+          <select
+            aria-label="Named matrix example"
+            value={selectedPreset(presets(m, n), s.a)}
+            onChange={(e) => {
+              const choice = presets(m, n).find((p) => p.id === e.target.value);
+              if (choice) patch({ a: choice.values });
+            }}
+          >
+            <option value="custom" disabled>
+              Custom matrix
+            </option>
+            {presets(m, n).map((p) => (
+              <option value={p.id} key={p.id}>
+                {p.label}
               </option>
-              {presets(m, n).map((p) => (
-                <option value={p.id} key={p.id}>
-                  {p.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="editor-heading">
-            <b>A</b>
-            <MathText
-              tex={`\\mathbb R^{${n}}\\longrightarrow\\mathbb R^{${m}}`}
-            />
-          </div>
-          <MatrixEditor values={s.a} name="A" onChange={(a) => patch({ a })} />
-          <p className="input-hint">
-            Edit from −3 to 3 in steps of 0.5. Enter or leave a field to apply.
-            Arrow keys change by 0.5.
-          </p>
-          <div className="control-divider" />
-          <h3>{isTranspose ? "Transpose input u" : "Input vector x"}</h3>
-          <VectorEditor
-            name={isTranspose ? "u" : "x"}
-            values={isTranspose ? s.transposeX : s.x}
-            onChange={(v) => patch(isTranspose ? { transposeX: v } : { x: v })}
+            ))}
+          </select>
+        </label>
+        <div className="editor-heading">
+          <b>A</b>
+          <MathText
+            tex={`\\mathbb R^{${n}}\\longrightarrow\\mathbb R^{${m}}`}
           />
-          <div className="operation-buttons">
-            <button
-              aria-pressed={isInverse}
-              onClick={() =>
-                patch({ operation: isInverse ? "original" : "inverse" })
-              }
-            >
-              {isInverse ? "Hide inverse" : "Show inverse"}
-            </button>
-            <button
-              aria-pressed={isTranspose}
-              onClick={() =>
-                patch({ operation: isTranspose ? "original" : "transpose" })
-              }
-            >
-              {isTranspose ? "Hide transpose" : "Show transpose"}
-            </button>
-          </div>
-          <Stats matrix={a} />
-          {isInverse && (
-            <section className="derived-card" aria-label="Inverse view">
-              <h3>Inverse · undo the map</h3>
-              {unavailable ? (
-                <p className="notice">{unavailable}</p>
-              ) : (
-                <>
-                  <MathText block tex={`A^{-1}=${texMatrix(inv!)}`} />
-                  <p className="result-text">
-                    Recovered x = {coordinates(multiplyVector(inv!, y))}
-                  </p>
-                  <MathText tex={`A^{-1}(Ax)=x`} />
-                  <p>
-                    The green dashed vector overlays x in the input space.
-                    Inverse entries are exact and read-only.
-                  </p>
-                </>
-              )}
-            </section>
-          )}
-          {isTranspose && <TransposeReadout a={a} />}
-        </aside>
-        <div className="visual-area">
-          <div className="map-heading">
-            <MathText
-              tex={`${symbol}:\\mathbb R^{${inputDim}}\\longrightarrow\\mathbb R^{${outputDim}}`}
-            />
-            <span>
-              {isTranspose ? "Transpose view" : "Standard coordinates"}
-            </span>
-          </div>
-          <div className="spaces">
-            <Space
-              key={`in-${inputDim}-${s.resetKey}`}
-              title="Input space"
-              dimension={inputDim}
-              arrows={inputArrows}
-              unit={identity(inputDim)}
-              unitLabel={`unit ${["", "interval", "square", "cube"][inputDim]}`}
-            />
-            <Space
-              key={`out-${outputDim}-${s.resetKey}`}
-              title="Output space"
-              dimension={outputDim}
-              arrows={outArrows}
-              span={shown}
-              unit={shown}
-              unitLabel={`image of the unit ${["", "interval", "square", "cube"][inputDim]}`}
-              description={
-                isTranspose
-                  ? "Columns t₁, t₂, … are the original rows."
-                  : "Drag a column endpoint to change A."
-              }
-            />
-          </div>
-          <Combination
-            a={shown}
-            x={x}
-            symbol={symbol}
-            input={isTranspose ? "u" : "x"}
-            col={isTranspose ? "t" : "a"}
-          />
-          {isTranspose && (
-            <div className="transpose-stats">
-              <Stats matrix={shown} symbol="Aᵀ" />
-            </div>
-          )}
         </div>
+        <MatrixEditor values={s.a} name="A" onChange={(a) => patch({ a })} />
+        <p className="input-hint">
+          Edit from −3 to 3 in steps of 0.5. Enter or leave a field to apply.
+          Arrow keys change by 0.5.
+        </p>
+        <div className="operation-buttons">
+          <button
+            aria-pressed={isInverse}
+            onClick={() =>
+              patch({ operation: isInverse ? "original" : "inverse" })
+            }
+          >
+            {isInverse ? "Hide inverse" : "Show inverse"}
+          </button>
+          <button
+            aria-pressed={isTranspose}
+            onClick={() =>
+              patch({ operation: isTranspose ? "original" : "transpose" })
+            }
+          >
+            {isTranspose ? "Hide transpose" : "Show transpose"}
+          </button>
+        </div>
+        {(isInverse || isTranspose) && (
+          <p className="input-hint">
+            The plots show {label}, calculated from this source matrix. Each
+            operation retains its own input vector.
+          </p>
+        )}
+        {shown && (
+          <>
+            <div className="control-divider" />
+            <h3>
+              Input {input} for {label}
+            </h3>
+            <VectorEditor
+              name={input}
+              values={inputValues}
+              onChange={updateInput}
+            />
+          </>
+        )}
+      </aside>
+      <div className="visual-area" data-operation={s.operation}>
+        <section className="operator-summary" aria-label="Displayed operation">
+          <div className="map-heading">
+            <h2>
+              {isInverse
+                ? "Inverse transformation"
+                : isTranspose
+                  ? "Transpose transformation"
+                  : "Matrix transformation"}
+            </h2>
+            {shown && (
+              <MathText
+                tex={`${symbol}:\\mathbb R^{${shown[0].length}}\\longrightarrow\\mathbb R^{${shown.length}}`}
+              />
+            )}
+          </div>
+          {shown ? (
+            <>
+              <div className="operator-values">
+                <MathText block tex={`${symbol}=${texMatrix(shown)}`} />
+                <Stats matrix={shown} symbol={label} />
+              </div>
+              {isInverse && (
+                <p>
+                  The plots apply A⁻¹ to y. Applying A to the result recovers y.
+                </p>
+              )}
+              {isTranspose && (
+                <p>
+                  The plots apply Aᵀ to u. Transposing exchanges rows and
+                  columns; it generally does not undo A.
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="notice" role="status">
+              {unavailable}
+            </p>
+          )}
+        </section>
+        {shown && y && (
+          <>
+            <div className="spaces">
+              <Space
+                key={`in-${shown[0].length}-${s.resetKey}`}
+                title="Input space"
+                dimension={shown[0].length}
+                arrows={[
+                  {
+                    id: "input",
+                    label: input,
+                    value: x,
+                    color: DARK,
+                    onChange: updateInput,
+                  },
+                ]}
+                unit={identity(shown[0].length)}
+                unitLabel={`unit ${["", "interval", "square", "cube"][shown[0].length]}`}
+              />
+              <Space
+                key={`out-${shown.length}-${s.resetKey}`}
+                title="Output space"
+                dimension={shown.length}
+                arrows={[
+                  ...columnArrows(
+                    shown,
+                    column,
+                    s.operation === "original" ? updateColumn : undefined,
+                  ),
+                  {
+                    id: "output",
+                    label: `${label}${input}`,
+                    value: y,
+                    color: DARK,
+                  },
+                ]}
+                span={shown}
+                unit={shown}
+                unitLabel={`image of the unit ${["", "interval", "square", "cube"][shown[0].length]} under ${label}`}
+                description={
+                  s.operation === "original"
+                    ? "Drag a column endpoint to change A."
+                    : `Columns of ${label} are calculated from A.`
+                }
+              />
+            </div>
+            <Combination
+              a={shown}
+              x={x}
+              symbol={symbol}
+              input={input}
+              col={column}
+            />
+            {isInverse && (
+              <section
+                className="derived-card inverse-check"
+                aria-label="Inverse check"
+              >
+                <h3>Inverse identity</h3>
+                <MathText
+                  block
+                  tex={`A(A^{-1}y)=A${texVector(y)}=${texVector(multiplyVector(a, y))}=y`}
+                />
+                <p data-testid="inverse-recovered">
+                  Recovered y = {coordinates(multiplyVector(a, y))}
+                </p>
+              </section>
+            )}
+            {isTranspose && (
+              <details className="transpose-details">
+                <summary>Entry correspondence</summary>
+                <TransposeReadout a={a} />
+              </details>
+            )}
+          </>
+        )}
       </div>
-    </>
+    </div>
   );
 }
 function Bases({ s, dispatch }: { s: State; dispatch: Dispatch }) {
@@ -390,8 +428,7 @@ function Bases({ s, dispatch }: { s: State; dispatch: Dispatch }) {
   return (
     <div className="workspace">
       <aside className="controls panel">
-        <span className="eyebrow">Coordinates</span>
-        <h2>Choose a basis</h2>
+        <h2>Basis vectors</h2>
         <label className="select-label">
           Dimension
           <select
@@ -410,31 +447,22 @@ function Bases({ s, dispatch }: { s: State; dispatch: Dispatch }) {
           Named example
           <select
             aria-label="Named basis example"
-            value=""
+            value={selectedPreset(basisPresets(d), s.b)}
             onChange={(e) => {
-              const name = e.target.value;
-              let values = identity(d).map((r) => r.map((q) => q.toNumber()));
-              if (name === "oblique" && d > 1) values[0][1] = 1;
-              if (name === "scaled")
-                values = values.map((r) => r.map((x) => 2 * x));
-              if (name === "dependent")
-                values = values.map((r) => r.map(() => 1));
-              patch({ b: values });
+              const preset = basisPresets(d).find(
+                (p) => p.id === e.target.value,
+              );
+              if (preset) patch({ b: preset.values });
             }}
           >
-            <option value="" disabled>
-              Choose an example…
+            <option value="custom" disabled>
+              Custom vectors
             </option>
-            <option value="standard">Standard basis</option>
-            <option value="scaled">Scaled basis</option>
-            {d > 1 && (
-              <>
-                <option value="oblique">Oblique basis</option>
-                <option value="dependent">
-                  Dependent vectors (not a basis)
-                </option>
-              </>
-            )}
+            {basisPresets(d).map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.label}
+              </option>
+            ))}
           </select>
         </label>
         <div className="editor-heading">
@@ -463,7 +491,7 @@ function Bases({ s, dispatch }: { s: State; dispatch: Dispatch }) {
       <div className="visual-area">
         <div className="map-heading">
           <MathText tex={`v=B[v]_B`} />
-          <span>Same vector, different coordinates</span>
+          <span>Basis coordinates</span>
         </div>
         <div className="spaces">
           <Space
@@ -495,10 +523,11 @@ function Bases({ s, dispatch }: { s: State; dispatch: Dispatch }) {
               key={`coord-${d}-${s.resetKey}`}
               title="Basis coordinate space"
               dimension={d}
+              axisLabels={["c₁", "c₂", "c₃"]}
               arrows={[
                 { id: "coordinates", label: "[v]B", value: c, color: GREEN },
               ]}
-              description="These are coefficients in B, not the standard coordinates of v. Calculated fractions are not snapped."
+              description="Read-only coefficients c = B⁻¹v. Edit B or v in the left panel to change them; calculated values retain exact fractions."
             />
           ) : (
             <section className="empty-space">
@@ -510,7 +539,7 @@ function Bases({ s, dispatch }: { s: State; dispatch: Dispatch }) {
         </div>
         {c && (
           <section className="equation-card">
-            <span className="eyebrow">Reconstruct the vector</span>
+            <h3>Vector reconstruction</h3>
             <MathText
               block
               tex={`${texVector(v)}=${texMatrix(b)}${texVector(c)}=${c.map((q, j) => `\\left(${q.tex()}\\right)b_{${j + 1}}`).join("+")}`}
@@ -528,8 +557,7 @@ function OLS({ s, dispatch }: { s: State; dispatch: Dispatch }) {
     <section className="ols-panel" aria-label="OLS example">
       <div className="section-heading">
         <div>
-          <span className="eyebrow">Optional example</span>
-          <h2>Least squares is a projection</h2>
+          <h2>Ordinary least squares</h2>
         </div>
         <span className="tag">3 observations · 2 coefficients</span>
       </div>
@@ -598,11 +626,7 @@ export default function App() {
     <div className="lab">
       <header className="lab-header">
         <div>
-          <p className="eyebrow">Explore the geometry</p>
-          <h1>
-            Linear Algebra Lab<span className="title-dot">.</span>
-          </h1>
-          <p>Move vectors. Change a matrix. See the connection.</p>
+          <h1>Linear Algebra Lab</h1>
         </div>
         <a
           className="repo-link"
@@ -617,7 +641,7 @@ export default function App() {
         <div
           className="tabs"
           role="tablist"
-          aria-label="Explore"
+          aria-label="Dashboard views"
           onKeyDown={(e) => {
             if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) {
               e.preventDefault();
@@ -656,6 +680,44 @@ export default function App() {
           </button>
         </div>
         <div className="utility-controls">
+          <button className="reset" onClick={() => dispatch({ type: "reset" })}>
+            ↺ Reset all
+          </button>
+        </div>
+      </div>
+      <main>
+        <div
+          key={s.resetKey}
+          id={`${s.tab}-panel`}
+          role="tabpanel"
+          aria-labelledby={`${s.tab}-tab`}
+        >
+          <p className="tab-description">
+            {s.tab === "matrices" ? (
+              <>
+                A matrix maps an input vector to an output vector. Its columns
+                are the images of the standard basis vectors, and multiplying by
+                the matrix forms a linear combination of those columns. The
+                plots show the input and output spaces and the transformation of
+                a unit interval, square, or cube.
+              </>
+            ) : (
+              <>
+                A basis assigns coordinates to vectors using a set of linearly
+                independent vectors. The left plot shows the basis vectors and v
+                in standard coordinates; the right plot shows the coefficients
+                needed to express v in that basis. Changing the basis holds v
+                fixed and changes its coefficients.
+              </>
+            )}
+          </p>
+          {s.tab === "matrices" ? (
+            <Matrices s={s} dispatch={dispatch} />
+          ) : (
+            <Bases s={s} dispatch={dispatch} />
+          )}
+        </div>
+        <div className="ols-toggle">
           <label>
             <input
               type="checkbox"
@@ -669,23 +731,6 @@ export default function App() {
             />{" "}
             Show OLS example
           </label>
-          <button className="reset" onClick={() => dispatch({ type: "reset" })}>
-            ↺ Reset all
-          </button>
-        </div>
-      </div>
-      <main>
-        <div
-          key={s.resetKey}
-          id={`${s.tab}-panel`}
-          role="tabpanel"
-          aria-labelledby={`${s.tab}-tab`}
-        >
-          {s.tab === "matrices" ? (
-            <Matrices s={s} dispatch={dispatch} />
-          ) : (
-            <Bases s={s} dispatch={dispatch} />
-          )}
         </div>
         {s.showOLS && <OLS s={s} dispatch={dispatch} />}
       </main>
