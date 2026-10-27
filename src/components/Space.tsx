@@ -1,4 +1,11 @@
-import { useId, useMemo, useRef, useState, type PointerEvent } from "react";
+import {
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent,
+  type ReactNode,
+} from "react";
 import {
   columns,
   coordinates,
@@ -23,6 +30,7 @@ export const COLORS = ["#2678ad", "#b84b31", "#8060a6"];
 export interface Arrow {
   id: string;
   label: string;
+  name?: string;
   value: Vector;
   color: string;
   start?: Vector;
@@ -39,6 +47,8 @@ interface Props {
   gridBasis?: Matrix;
   description?: string;
   axisLabels?: string[];
+  controls?: ReactNode;
+  spanDescription?: string;
 }
 type Drag =
   | { kind: "orbit"; x: number; y: number; yaw: number; pitch: number }
@@ -60,6 +70,8 @@ export function Space({
   gridBasis,
   description,
   axisLabels = ["x", "y", "z"],
+  controls,
+  spanDescription,
 }: Props) {
   const [angle, setAngle] = useState({ yaw: -0.95, pitch: 0.48 });
   const [selected, setSelected] = useState<string | null>(null);
@@ -169,7 +181,7 @@ export function Space({
   };
   const grid = [];
   if (dimension >= 2)
-    for (let i = -6; i <= 6; i++) {
+    for (let i = -6; i <= 6; i += dimension === 3 ? 2 : 1) {
       grid.push(
         line(
           [-6, i, 0].slice(0, dimension),
@@ -278,31 +290,31 @@ export function Space({
       className="space-card"
       aria-label={title}
       data-dimension={dimension}
+      data-span-rank={sg?.rank}
     >
       <header>
         <h3>{title}</h3>
         <span className="space-badge">
-          ℝ<sup>{dimension}</sup>
+          {dimension} {dimension === 1 ? "coordinate" : "coordinates"}
         </span>
       </header>
       <div className="space-toolbar">
         <span>
-          {dimension === 3
-            ? "Drag background to rotate"
-            : arrows.some((a) => a.onChange)
-              ? "Drag a filled endpoint"
-              : "Calculated vectors"}{" "}
-          · axes −6 to 6
+          {arrows.some((a) => a.onChange)
+            ? "Filled endpoints: editable"
+            : "Calculated · read-only"}
+          {dimension === 3 ? " · drag background to rotate" : " · axes −6 to 6"}
         </span>
         {dimension === 3 && (
           <button
             type="button"
             onClick={() => setAngle({ yaw: -0.95, pitch: 0.48 })}
           >
-            Reset view
+            Reset viewpoint
           </button>
         )}
       </div>
+      {controls && <div className="plot-inputs">{controls}</div>}
       <svg
         ref={svg}
         className="space-svg"
@@ -374,6 +386,7 @@ export function Space({
             return lines;
           })()}
         {dimension === 3 &&
+          span &&
           box.edges.map(([i, j], k) =>
             line(
               boxVertices[i],
@@ -394,7 +407,12 @@ export function Space({
           return (
             <g key={i}>
               {line(a, b, `axis${i}`, "#8b9da5", 1.2)}
-              <text x={end[0] + 7} y={end[1] - 7} className="axis-label">
+              <text
+                x={Math.min(W - 8, end[0] + 7)}
+                y={end[1] - 7}
+                textAnchor={end[0] > W * 0.65 ? "end" : "start"}
+                className="axis-label"
+              >
                 {axisLabels[i]} · 6
               </text>
               <text x={start[0] - 10} y={start[1] + 15} className="tick-label">
@@ -515,7 +533,7 @@ export function Space({
                     role={arrow.onChange ? "button" : undefined}
                     aria-label={
                       arrow.onChange
-                        ? `Select ${arrow.label} to move; coordinates ${coordinates(arrow.value)}`
+                        ? `Select ${arrow.name ?? arrow.label} to move; coordinates ${coordinates(arrow.value)}`
                         : undefined
                     }
                     onPointerDown={(e) => begin(e, arrow.id)}
@@ -603,7 +621,7 @@ export function Space({
                   fontSize="11"
                   fill={COLORS[axis]}
                 >
-                  {["x", "y", "z"][axis]}
+                  {axisLabels[axis].length > 3 ? axis + 1 : axisLabels[axis]}
                 </text>
               </g>
             );
@@ -616,10 +634,22 @@ export function Space({
           0
         </text>
       </svg>
+      <div className="space-legend">
+        {arrows.map((a) => (
+          <span key={a.id} style={{ color: a.color }}>
+            <b>{a.name ?? a.label}</b> {coordinates(a.value)}
+            {outside(
+              numbers(a.value).map(
+                (v, i) => v + (a.start?.[i].toNumber() || 0),
+              ),
+            ) && <em> outside view</em>}
+          </span>
+        ))}
+      </div>
       {(dimension === 3 || arrows.filter((a) => a.onChange).length > 1) &&
         arrows.some((a) => a.onChange) && (
           <div className="handle-selector">
-            <span>Move:</span>
+            <span>Choose an arrow to move:</span>
             {arrows
               .filter((a) => a.onChange)
               .map((a) => (
@@ -629,34 +659,22 @@ export function Space({
                   aria-pressed={selected === a.id}
                   onClick={() => setSelected(selected === a.id ? null : a.id)}
                 >
-                  {a.label}
+                  {a.name ?? a.label}
                 </button>
               ))}
             <small>
               {dimension === 3
-                ? "Select a vector, then drag an x, y, or z handle. Rotate if an axis is edge-on."
-                : "Select a vector to bring its endpoint to the front when vectors overlap."}
+                ? `Select an arrow, then drag a coordinate handle. ${axisLabels[0].length > 3 ? "Handles 1, 2, 3 change the corresponding observation." : "Handles x, y, z change the corresponding coordinate."} Rotating the background changes only the viewpoint. Axes run from −6 to 6; rotate if a handle is hidden by the viewing angle.`
+                : "Select an arrow to reach its endpoint when arrows overlap. Drag the filled endpoint to edit it; hollow endpoints are calculated."}
             </small>
           </div>
         )}
-      <div className="space-legend">
-        {arrows.map((a) => (
-          <span key={a.id} style={{ color: a.color }}>
-            <b>{a.label}</b> {coordinates(a.value)}
-            {outside(
-              numbers(a.value).map(
-                (v, i) => v + (a.start?.[i].toNumber() || 0),
-              ),
-            ) && <em> outside view</em>}
-          </span>
-        ))}
-      </div>
       {(span || unitLabel || description) && (
         <p className="plot-note">
           {span && (
             <>
-              Green: column span (
-              {["origin", "line", "plane", "all of ℝ³"][sg!.rank]}).{" "}
+              {spanDescription ??
+                `Green: the full column span (${["origin", "line", "plane", "three-dimensional space"][sg!.rank]}), using unrestricted real-number weights.`}{" "}
             </>
           )}
           {unitLabel && <>Gold: {unitLabel}. </>}

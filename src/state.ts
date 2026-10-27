@@ -18,8 +18,7 @@ export function parseInput(text: string): number | null {
 }
 export const initialMatrix = (m: number, n: number) =>
   identity(m, n).map((row) => row.map((q) => q.toNumber()));
-export const initialVector = (n: number) =>
-  Array.from({ length: n }, (_, i) => (i === 0 ? 1 : 0.5));
+export const initialVector = (n: number) => Array(n).fill(1) as number[];
 export type Operation = "original" | "inverse" | "transpose";
 export interface State {
   tab: "matrices" | "bases";
@@ -36,11 +35,17 @@ export interface State {
 }
 export const initialState = (): State => ({
   tab: "matrices",
-  a: initialMatrix(2, 2),
+  a: [
+    [2, 0],
+    [0, 1],
+  ],
   x: initialVector(2),
   transposeX: initialVector(2),
   inverseY: initialVector(2),
-  b: initialMatrix(2, 2),
+  b: [
+    [1, 1],
+    [0, 1],
+  ],
   v: [2, 1],
   operation: "original",
   showOLS: false,

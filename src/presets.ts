@@ -3,6 +3,7 @@ export interface Preset {
   id: string;
   label: string;
   values: number[][];
+  description?: string;
 }
 export const selectedPreset = (choices: Preset[], values: number[][]) =>
   choices.find(
@@ -17,10 +18,14 @@ export const selectedPreset = (choices: Preset[], values: number[][]) =>
 export function basisPresets(d: number): Preset[] {
   const standard = initialMatrix(d, d);
   const choices: Preset[] = [
-    { id: "standard", label: "Standard basis", values: standard },
+    {
+      id: "standard",
+      label: "Usual axes (standard)",
+      values: standard,
+    },
     {
       id: "scaled",
-      label: "Scaled basis",
+      label: "Longer arrows (scaled)",
       values: standard.map((row) => row.map((x) => 2 * x)),
     },
   ];
@@ -28,10 +33,10 @@ export function basisPresets(d: number): Preset[] {
     const oblique = initialMatrix(d, d);
     oblique[0][1] = 1;
     choices.push(
-      { id: "oblique", label: "Oblique basis", values: oblique },
+      { id: "oblique", label: "Slanted (oblique)", values: oblique },
       {
         id: "dependent",
-        label: "Dependent vectors (not a basis)",
+        label: "One line (not a basis)",
         values: standard.map((row) => row.map(() => 1)),
       },
     );
@@ -45,53 +50,35 @@ export function presets(m: number, n: number): Preset[] {
       id: "identity",
       label:
         m === n
-          ? "Identity"
+          ? "Unchanged (identity)"
           : m > n
-            ? "Coordinate inclusion"
-            : "Coordinate drop",
+            ? "Add zero coordinates"
+            : "Keep the first coordinates",
       values: eye,
     },
     {
       id: "zero",
-      label: "Zero transformation",
+      label: "All outputs zero",
       values: eye.map((row) => row.map(() => 0)),
     },
   ];
   if (m === n) {
     p.push(
       {
-        id: "stretch",
-        label: "Uniform stretch ×2",
-        values: eye.map((row) => row.map((x) => 2 * x)),
-      },
-      {
-        id: "compress",
-        label: "Uniform compression ×½",
-        values: eye.map((row) => row.map((x) => x / 2)),
+        id: "stretch-x",
+        label: "Stretch ×2",
+        values: eye.map((row, i) => row.map((x) => (i === 0 ? 2 * x : x))),
+        description: "This matrix doubles the first coordinate.",
       },
       {
         id: "reflect",
-        label: "Reflect first coordinate",
+        label: "Reflection",
         values: eye.map((row, i) => row.map((x) => (i === 0 ? -x : x))),
+        description:
+          "This reflection changes the sign of the first coordinate.",
       },
     );
     if (n >= 2) {
-      const stretch = initialMatrix(n, n);
-      stretch[0][0] = 2;
-      const compress = initialMatrix(n, n);
-      compress[0][0] = 0.5;
-      p.push(
-        {
-          id: "stretch-x",
-          label: "Stretch first coordinate ×2",
-          values: stretch,
-        },
-        {
-          id: "compress-x",
-          label: "Compress first coordinate ×½",
-          values: compress,
-        },
-      );
       const turn = initialMatrix(n, n);
       turn[0][0] = 0;
       turn[1][1] = 0;
@@ -103,21 +90,25 @@ export function presets(m: number, n: number): Preset[] {
       p.push(
         {
           id: "quarter",
-          label: n === 3 ? "Quarter-turn about z" : "Quarter-turn rotation",
+          label: n === 3 ? "Rotate 90° about z" : "Rotate 90°",
           values: turn,
         },
-        { id: "shear", label: "Shear", values: shear },
+        { id: "shear", label: "Horizontal slant (shear)", values: shear },
         {
           id: "axis",
-          label: "Orthogonal projection onto x-axis",
+          label: "Flatten onto x-axis",
           values: axis,
+          description:
+            "This projection keeps the first coordinate and sets the others to zero.",
         },
       );
     }
     if (n === 3)
       p.push({
         id: "plane",
-        label: "Orthogonal projection onto xy-plane",
+        description:
+          "This projection keeps the first two coordinates and sets the third to zero.",
+        label: "Flatten onto xy-plane",
         values: [
           [1, 0, 0],
           [0, 1, 0],

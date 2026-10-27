@@ -34,29 +34,30 @@ for (const [name, engine] of Object.entries({ chromium, firefox, webkit })) {
     0,
   );
   assert.equal(await page.getByTestId("rank").textContent(), "2");
+  await page.locator(".matrix-size > summary").click();
   await page.getByLabel("Rows: output dimension").selectOption("3");
   await page.getByLabel("Columns: input dimension").selectOption("2");
   assert.equal(
     await page.getByTestId("determinant").textContent(),
     "Not defined",
   );
-  await page
-    .getByRole("button", { name: "Show transpose", exact: true })
-    .click();
+  await page.locator(".operations > summary").click();
+  await page.getByRole("radio", { name: "Transpose Aᵀ", exact: true }).check();
   assert.equal(
     await page
-      .getByRole("region", { name: "Input space", exact: true })
+      .getByRole("region", { name: "Input vector", exact: true })
       .getAttribute("data-dimension"),
     "3",
   );
   assert.equal(
     await page
-      .getByRole("region", { name: "Output space", exact: true })
+      .getByRole("region", { name: "Output vector", exact: true })
       .getAttribute("data-dimension"),
     "2",
   );
   await page.reload();
   await page.getByRole("heading", { name: "Linear Algebra Lab" }).waitFor();
+  await page.evaluate(() => window.scrollTo(0, 0));
   if (name === "chromium")
     await page.screenshot({
       path: ".preview/screenshots/hugo-desktop.png",

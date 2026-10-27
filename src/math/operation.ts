@@ -13,9 +13,9 @@ export function operationView(a: Matrix, operation: Operation) {
       column: "b",
       unavailable:
         a.length !== a[0].length
-          ? "A is rectangular; a two-sided inverse is not defined."
+          ? "A is rectangular: its input and output have different numbers of coordinates. A two-sided inverse is not defined."
           : !matrix
-            ? "A is singular (determinant 0); no inverse exists."
+            ? "A maps different inputs to the same output, so the original input cannot be recovered uniquely. This matrix is singular (determinant 0); no inverse exists."
             : null,
     };
   }

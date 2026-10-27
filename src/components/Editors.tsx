@@ -129,10 +129,7 @@ export function VectorEditor({
     >
       {values.map((v, i) => (
         <label key={i}>
-          <span>
-            {name}
-            <sub>{i + 1}</sub>
-          </span>
+          <span>{["First", "Second", "Third"][i]}</span>
           <NumberInput
             value={v}
             revision={values}

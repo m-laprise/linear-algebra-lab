@@ -756,3 +756,313 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Explanations stay near the controls and plots they describe. */
+.lab .disclosure {
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  padding: 14px 16px;
+}
+.lab .disclosure summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+.lab .disclosure[open] > summary {
+  margin-bottom: 14px;
+}
+.lab .disclosure p,
+.lab .controls p,
+.lab .operator-summary p {
+  font-size: 14px;
+  line-height: 1.55;
+}
+.lab .disclosure p:last-child {
+  margin-bottom: 0;
+}
+.lab .controls .disclosure {
+  padding: 12px 0;
+  border-width: 1px 0 0;
+  border-radius: 0;
+}
+.lab .example-description {
+  margin: 14px 0 0;
+}
+.lab .dimensions {
+  display: grid;
+  gap: 14px;
+}
+.lab .dimensions label,
+.lab .select-label {
+  font-size: 14px;
+}
+.lab .operation-options {
+  border: 0;
+  margin: 0 0 14px;
+  padding: 0;
+  min-width: 0;
+}
+.lab .operation-options legend {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+.lab .operation-options label,
+.lab .check-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  margin: 8px 0;
+}
+.lab input[type="checkbox"],
+.lab input[type="radio"] {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  accent-color: var(--teal);
+}
+.lab .display-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  margin-top: 14px;
+}
+.lab .view-explanation,
+.lab .notation-note {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 10px 0 0;
+}
+.lab .dimension-summary {
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.lab .mobile-controls-link {
+  display: none;
+}
+.lab .space-card > header {
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.lab .space-card h3 {
+  font-size: 17px;
+}
+.lab .space-badge {
+  font-size: 13px;
+  white-space: nowrap;
+}
+.lab .space-toolbar {
+  font-size: 13px;
+  gap: 8px;
+  min-height: 46px;
+}
+.lab .space-toolbar button {
+  font-size: 12px;
+  padding: 5px 7px;
+}
+.lab .plot-inputs {
+  padding: 8px 20px 0;
+  min-height: 116px;
+}
+.lab .coordinate-hint {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+.lab .vector-editor {
+  gap: 12px;
+  margin: 0 0 12px;
+}
+.lab .vector-editor label,
+.lab .vector-readout > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  min-width: 0;
+}
+.lab .vector-editor label > span,
+.lab .vector-readout > div > span {
+  font-size: 13px;
+}
+.lab .vector-readout output {
+  display: block;
+  padding: 9px 2px;
+  text-align: center;
+  background: #eef3f0;
+  border: 1px solid #dce4e3;
+  border-radius: 5px;
+  font-variant-numeric: tabular-nums;
+}
+.lab .space-legend {
+  margin-top: 0;
+  font-size: 13px;
+}
+.lab .space-legend b {
+  font-size: 13px;
+}
+.lab .plot-note {
+  font-size: 13px;
+}
+.lab .handle-selector {
+  padding: 12px 18px;
+  font-size: 13px;
+}
+.lab .handle-selector small,
+.lab .handle-selector button {
+  font-size: 12px;
+}
+.lab .input-hint,
+.lab .field-error {
+  font-size: 13px;
+}
+.lab .stats {
+  border: 0;
+  padding: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-bottom: 18px;
+}
+.lab .stats span,
+.lab .stats small {
+  font-size: 14px;
+}
+.lab .transpose-readout {
+  margin-top: 18px;
+}
+.lab .transpose-pair {
+  justify-content: flex-start;
+  gap: 30px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.lab .readout-matrix button {
+  min-width: 36px;
+}
+.lab .coordinate-result {
+  padding: 22px;
+  min-width: 0;
+}
+.lab .coordinate-result h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+.lab .result-badge {
+  font-size: 13px;
+  color: var(--muted);
+}
+.lab .coordinate-table,
+.lab .observation-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin: 16px 0;
+  display: table;
+}
+.lab .coordinate-table th,
+.lab .coordinate-table td,
+.lab .observation-table th,
+.lab .observation-table td {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+}
+.lab .coordinate-table thead th,
+.lab .observation-table thead th {
+  font-weight: 600;
+}
+.lab .coordinate-table tbody th {
+  font-weight: 400;
+}
+.lab .coordinate-table td {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.lab .coordinate-result .calculation {
+  padding: 16px;
+}
+.lab .coordinate-result .calculation .katex-display {
+  font-size: 0.9em;
+}
+.lab .coordinate-result p {
+  font-size: 14px;
+}
+.lab .observation-table caption {
+  text-align: left;
+  color: var(--ink);
+  font-weight: 600;
+}
+.lab .observation-table .number-field {
+  min-width: 65px;
+}
+.lab .coefficient-list {
+  display: flex;
+  gap: 40px;
+  padding: 14px 0;
+}
+.lab .coefficient-list dt {
+  font-weight: 600;
+}
+.lab .coefficient-list dd {
+  margin: 4px 0 0;
+  font-size: 18px;
+}
+.lab .ols-copy {
+  font-size: 14px;
+}
+.lab .ols-panel > p {
+  max-width: 1000px;
+  margin-bottom: 24px;
+}
+.lab #matrix-controls,
+.lab #basis-controls {
+  scroll-margin-top: 85px;
+}
+@media (max-width: 700px) {
+  .lab .workspace .controls {
+    order: 2;
+  }
+  .lab .workspace .visual-area {
+    order: 1;
+  }
+  .lab .mobile-controls-link {
+    display: block;
+    margin-bottom: 14px;
+    font-size: 14px;
+  }
+  .lab .tabs {
+    gap: 12px;
+  }
+  .lab .tabs button {
+    font-size: 14px;
+    max-width: 145px;
+  }
+  .lab .top-controls {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .lab .reset {
+    white-space: nowrap;
+    font-size: 12px;
+    padding: 7px;
+  }
+  .lab .stats {
+    grid-template-columns: 1fr;
+  }
+  .lab .coordinate-result {
+    padding: 18px;
+  }
+  .lab .ols-panel {
+    padding: 16px;
+  }
+  .lab .observation-table th,
+  .lab .observation-table td {
+    padding: 8px 4px;
+    font-size: 13px;
+  }
+}

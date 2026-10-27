@@ -4,7 +4,9 @@ A small interactive dashboard for exploring matrices as linear transformations a
 
 **Features:** exact rank and determinant; bounded half-unit editing; named transformations; optional inverse and transpose views; basis coordinates; a hidden-by-default least-squares projection example; reset; keyboard and numeric alternatives to dragging.
 
-Inverse and transpose each display their own matrix, columns, transformed unit shape, statistics, and editable input. The source matrix A remains editable. In Bases, edit the basis or the geometric vector; the right panel displays calculated coefficients. Reset restores initial values while keeping the active tab.
+The dashboard starts with a 2D stretch and a simple input/output comparison. Columns and their numerical sum, unit shapes, span shading, rank/determinant, and other operations are available on request. Coordinates and bases starts with an oblique basis and a read-only coordinate comparison; a separate coordinate plot is optional.
+
+Inverse and transpose each display their own matrix, columns, transformed unit shape, statistics, and editable input. The source matrix A remains editable. In Coordinates and bases, edit the reference arrows or vector; the table displays calculated coefficients. Reset restores initial values while keeping the active tab.
 
 **Repository:** https://github.com/m-laprise/linear-algebra-lab
 

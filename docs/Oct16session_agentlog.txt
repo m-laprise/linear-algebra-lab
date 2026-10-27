@@ -524,3 +524,122 @@ The panel is now **“Calculating the output vector”**, with one explanatory s
 
 All **354 unit tests and 52 browser tests pass**, along with GitHub CI. The academic website remains unchanged, pending your review.
 
+[2026-10-27T10:00:23-04:00] User
+Review the entire dashboard from the perspective of a student who doesn't know linear algebra yet, and encounters the dashboard for the first time. Make a plan of how to make the dashboard clearer, more self-contained, less overwhelming. It can include adding clear and concise explanations, renaming panels, removing functionality, changing defaults, or anything else.
+
+[2026-10-27T10:00:23-04:00] Assistant
+I’ll review each view and its default state as a first-time student would encounter it, then propose a focused simplification plan. I’ll keep the review separate from implementation.
+
+[2026-10-27T10:03:16-04:00] Assistant
+The main obstacle is that the opening screen assumes several concepts at once: vectors, bases, span, rank, determinant, and transformations. The identity default also makes the two plots look almost identical. I’m focusing the plan on a clearer starting example and revealing additional representations when students choose them.
+
+[2026-10-27T10:07:30-04:00] Assistant
+Two views need more than shorter labels. In Bases, the second arrow can suggest that the vector itself changed, when it represents new coordinates for the same vector. In OLS, the axes represent three observations, but their x/y/z labels do not explain that. The mobile layout also places a long stack of controls before the plots, making actions and results harder to connect.
+
+[2026-10-27T10:11:38-04:00] Assistant
+I reviewed the default screen, both tabs, inverse and transpose, rectangular matrices, 3D views, invalid bases, OLS, and the mobile layout.
+
+**The main problem is that the dashboard assumes students already know what its representations mean.** The introductory text itself uses “standard basis,” “linear combination,” and “unit interval.” Several overlapping graphics then compete with statistics whose purpose has not been explained. I would simplify the starting screen and introduce each additional representation with its own short explanation.
+
+1. **Start with examples that visibly demonstrate something.**
+
+   Replace the initial identity matrix with a horizontal stretch:
+   \(A=\begin{bmatrix}2&0\\0&1\end{bmatrix}\), input \((1,1)\), output \((2,1)\).
+   Add: “This matrix doubles the first coordinate.” The current identity default makes the plots look almost identical, leaving the student to discover why the dashboard is useful.
+
+   In Bases, start with the existing oblique basis and vector \((2,1)\), whose coordinates in that basis are \((1,1)\). Keep identity and the standard basis available as named examples. Reset would restore these new defaults while preserving the active tab.
+
+2. **Reduce what appears at once.**
+
+   I recommend this initial visibility:
+
+   | Element | Proposed presentation |
+   |---|---|
+   | Matrix editor, input controls, input and output arrows | Visible |
+   | Matrix columns and the numerical calculation | Together under “Show columns and calculation” |
+   | Unit square/cube and its transformed shape | Optional, initially hidden |
+   | Rank and determinant | An expandable section below the plots |
+   | Green span shading | Optional within that section |
+   | Matrix dimensions | Under “Matrix size,” initially 2 × 2 |
+   | Inverse and transpose | Under “Other matrix operations” |
+   | OLS | Remains hidden, with its toggle below the dashboard |
+
+   Remove the duplicate read-only display of A in the ordinary matrix view: the editable matrix already shows it. Retain the separate derived matrix when inverse or transpose is selected.
+
+3. **Use plain labels and explain the first interaction.**
+
+   Replace the Matrices introduction with something like:
+
+   > In this dashboard, a vector is a list of numbers, drawn as an arrow from zero. A matrix is a table of numbers that calculates an output vector from an input vector. Drag the input arrow or edit its numbers to see the result.
+
+   Rename “Input space” to **“Input vector”** and “Output space” to **“Output vector.”** Label them “Editable” and “Calculated.” Use “Matrix A” in the ordinary view and “Original matrix A” when viewing a derived operation.
+
+   Replace unexplained ℝ²/ℝ³ badges with “2 coordinates” or “3 coordinates.” Define mathematical notation locally when it becomes relevant. Label dimension controls “Input coordinates — columns” and “Output coordinates — rows,” with a plain summary such as “3 input numbers → 2 output numbers.”
+
+   Shorten the example menu by removing redundant stretch/compression variants. Keep identity, a stretch, rotation, reflection, shear, projection, and zero. Use descriptive names with the formal term alongside: “Slant horizontally (shear)” and “Flatten onto a line (projection).”
+
+4. **Give each optional matrix representation a clear purpose.**
+
+   When columns are shown, explain: “Each colored arrow is one column of the matrix. The input numbers tell you how much of each column to add.” Keep the numerical sum directly beneath those plots.
+
+   Replace “unit square” in the control with **“Show a 1 × 1 square”**, adapting the wording for 1D and 3D. Explain that the second plot shows what the matrix does to that shape.
+
+   Explain rank as **the number of independent directions in the output**, with a concrete description: only the origin, a line, a plane, or all three dimensions. Explain determinant magnitude as the length, area, or volume multiplier; explain its sign separately. Span shading must explicitly represent the full linear span, beyond the dashboard’s bounded input choices.
+
+   Make the operation choice visibly exclusive: **A / Inverse A⁻¹ / Transpose Aᵀ**. Preserve the explicit operation views. For inverse, explain how it reverses A and why an inverse may be unavailable. For transpose, show the row-to-column correspondence immediately upon selection; that is its defining operation and is currently tucked away. Keep longer identity checks and formulas expandable.
+
+5. **Make Bases primarily about describing the same vector.**
+
+   Rename the tab **“Coordinates and bases.”** Introduce a basis as a set of reference arrows that lets every vector be described uniquely; coordinates specify how much of each reference arrow to add.
+
+   Keep the geometric plot, with the vector and editable basis arrows. Make the calculated result primarily a small coordinate comparison:
+
+   | Description of the same vector | Coordinates |
+   |---|---|
+   | Using the usual axes | (2, 1) |
+   | Using the chosen basis | (1, 1) |
+
+   Follow it with the explicit numerical reconstruction. Keep calculated coordinates read-only, as agreed.
+
+   Move the second coordinate-space plot behind **“Plot the coordinate values.”** Its current prominence can suggest that changing a basis physically changes the vector. Make the additional basis grid optional, especially in 3D. Keep the “not a basis” explanation visible whenever needed, without requiring students to interpret a determinant first.
+
+6. **Make interactions and small-screen layouts easier to follow.**
+
+   Keep editable inputs close to their plots and calculated coordinates close to the output. On mobile, remove the long stack of settings and duplicate information before the first plot. Increase the size of essential instructions and legends.
+
+   Distinguish editable handles from calculated endpoints using labels as well as appearance. Explain once that inputs move in half-unit steps while calculated results may contain other fractions.
+
+   For 3D, show fewer grid lines and no filled span or basis grid initially. Replace the “Move: x / a1 / a2” controls with “Choose an arrow to move: Input / Column 1 / Column 2.” Explain that dragging the background changes the viewpoint, while axis handles change coordinates. Preserve fixed, clearly labeled scales so a changing camera or automatic rescaling cannot masquerade as a mathematical change.
+
+7. **Make the optional regression example understandable on its own.**
+
+   Rename its toggle **“Show regression example (OLS).”** The key missing explanation is that each axis represents one observation. Label the axes “Observation 1,” “Observation 2,” and “Observation 3.”
+
+   Present the three predictor/outcome pairs in a small table, with editable outcomes. Explain:
+
+   > The three observed outcomes form one vector. The shaded plane contains the fitted values obtainable from the regression model. Least squares chooses the point on that plane closest to the observed vector.
+
+   Use “Observed values,” “Fitted values,” and “Residual: observed minus fitted” in the legend. Show intercept and slope with names. Put the design matrix, normal-equation formula, and orthogonality equation under “Matrix calculation.”
+
+I would implement this as **one coordinated interface revision**, starting with defaults and visibility, then the Bases and OLS explanations, then layout and interaction details. Preserve all nine matrix shapes, 3D support, exact calculations, bounded editing, the source link, and your caption. Update the automated checks and existing human release checklist for the new defaults, disclosures, labels, and unavailable-operation states.
+
+The release review should establish that someone can identify **what to change, what is calculated, and what each visible arrow represents** from the screen itself. No application changes have been made during this review.
+
+[2026-10-27T10:46:04-04:00] User
+go ahead
+
+[2026-10-27T10:46:04-04:00] Assistant
+I’ll implement the simplification plan, check the new defaults and expandable sections, and refresh the Hugo preview for review before any website deployment.
+
+[2026-10-27T10:50:29-04:00] Assistant
+I’m changing the starting view to a simple stretch and moving optional graphics and statistics behind labeled controls. In Bases, the main result will be a coordinate comparison, with the second plot available on request.
+
+[2026-10-27T10:56:20-04:00] Assistant
+The main views now use plain labels and distinguish editable inputs from calculated results. Columns, unit shapes, span shading, and the coordinate plot start hidden. The regression example now labels its axes by observation and presents the data and coefficients before the matrix formulas.
+
+[2026-10-27T11:03:09-04:00] Assistant
+The first browser checks confirm that the math and dragging still work with the new layout. I’m checking the new behaviors next: opening a section should leave values unchanged, closing the statistics section should remove its shading, and invalid bases should never show invented coordinates.
+
+[2026-10-27T11:08:34-04:00] Assistant
+All 354 unit tests and 58 browser tests now pass across Chromium, Firefox, and WebKit. The Hugo integration checks pass too. I’m finishing the visual review and updating the release checklist for the simpler starting views.
+
