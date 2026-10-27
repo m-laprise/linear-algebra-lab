@@ -113,37 +113,32 @@ function Combination({
   x,
   symbol = "A",
   input = "x",
-  col = "a",
 }: {
   a: Matrix;
   x: Vector;
   symbol?: string;
   input?: string;
-  col?: string;
 }) {
   const y = multiplyVector(a, x),
     cols = columns(a);
+  const terms = cols.map((c, j) => {
+    const coefficient =
+      x[j].n < 0n ? `\\left(${x[j].tex()}\\right)` : x[j].tex();
+    return `${coefficient}\\,\\textcolor{${COLORS[j]}}{${texVector(c)}}`;
+  });
   return (
-    <section className="equation-card" aria-label="Column combination">
-      <div>
-        <h3>Linear combination of columns</h3>
-      </div>
+    <section
+      className="equation-card calculation"
+      aria-label="Calculating the output vector"
+    >
+      <h3>Calculating the output vector</h3>
+      <p>
+        Multiply each column by the corresponding input coordinate, then add.
+      </p>
       <MathText
         block
-        tex={`${symbol}${input}=${x.map((_, j) => `${input}_{${j + 1}}${col}_{${j + 1}}`).join("+")}=${texVector(y)}`}
+        tex={`${symbol}${input}=${terms.join("+")}=${texVector(y)}`}
       />
-      <div className="column-terms">
-        {cols.map((c, j) => (
-          <div key={j} style={{ borderTopColor: COLORS[j] }}>
-            <MathText
-              tex={`${symbol}e_{${j + 1}}=${col}_{${j + 1}}=${texVector(c)}`}
-            />
-            <MathText
-              tex={`${x[j].tex()}\\,${col}_{${j + 1}}=${texVector(c.map((v) => v.mul(x[j])))}`}
-            />
-          </div>
-        ))}
-      </div>
     </section>
   );
 }
@@ -385,13 +380,7 @@ function Matrices({ s, dispatch }: { s: State; dispatch: Dispatch }) {
                 }
               />
             </div>
-            <Combination
-              a={shown}
-              x={x}
-              symbol={symbol}
-              input={input}
-              col={column}
-            />
+            <Combination a={shown} x={x} symbol={symbol} input={input} />
             {isInverse && (
               <section
                 className="derived-card inverse-check"

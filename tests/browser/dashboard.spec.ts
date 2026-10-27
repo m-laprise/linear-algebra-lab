@@ -279,6 +279,91 @@ test("shear, inverse, and transpose use matching columns, products, and unit sha
     await expect(page.getByLabel("Named matrix example")).toHaveValue("shear");
   }
 });
+test("numerical column sums use signed weights and the displayed operator", async ({
+  page,
+}) => {
+  await page.getByLabel("Named matrix example").selectOption("shear");
+  await edit(page, "A row 1 column 1", "2");
+  await edit(page, "x coordinate 1", "-0.5");
+  await edit(page, "x coordinate 2", "2");
+  const calculation = page.getByRole("region", {
+    name: "Calculating the output vector",
+  });
+  await expect(calculation.locator("annotation")).toContainText(
+    "Ax=\\left(-\\frac{1}{2}\\right)",
+  );
+  await expect(calculation.locator("annotation")).toContainText("+2\\,");
+  for (const fixture of [
+    {
+      button: null,
+      vectors: [
+        ["2", "0"],
+        ["1", "1"],
+        ["1", "2"],
+      ],
+    },
+    {
+      button: "Show inverse",
+      vectors: [
+        ["1/2", "0"],
+        ["-1/2", "1"],
+        ["1/4", "1/2"],
+      ],
+    },
+    {
+      button: "Show transpose",
+      vectors: [
+        ["2", "1"],
+        ["0", "1"],
+        ["2", "3/2"],
+      ],
+    },
+  ]) {
+    if (fixture.button)
+      await page
+        .getByRole("button", { name: fixture.button, exact: true })
+        .click();
+    const vectors = await calculation
+      .locator("math mtable")
+      .evaluateAll((tables) => {
+        const read = (el: Element): string => {
+          if (el.localName === "mfrac")
+            return Array.from(el.children, read).join("/");
+          return el.children.length
+            ? Array.from(el.children, read).join("")
+            : (el.textContent ?? "").replaceAll("−", "-");
+        };
+        return tables.map((table) =>
+          Array.from(table.querySelectorAll("mtd"), read),
+        );
+      });
+    expect(vectors).toEqual(fixture.vectors);
+    await expect(calculation.locator(".katex-error")).toHaveCount(0);
+  }
+  await shape(page, 3, 3);
+  await page.getByLabel("Named matrix example").selectOption("stretch");
+  await page.getByRole("button", { name: "Show inverse", exact: true }).click();
+  await page.setViewportSize({ width: 390, height: 844 });
+  const bounds = await calculation.locator(".math-block").evaluate((el) => {
+    const math = el.querySelector(".katex-html")!;
+    const startVisible =
+      math.getBoundingClientRect().left >= el.getBoundingClientRect().left - 1;
+    el.scrollLeft = el.scrollWidth;
+    const endVisible =
+      math.getBoundingClientRect().right <=
+      el.getBoundingClientRect().right + 1;
+    return {
+      startVisible,
+      endVisible,
+      pageFits: document.documentElement.scrollWidth <= innerWidth,
+    };
+  });
+  expect(bounds).toEqual({
+    startVisible: true,
+    endVisible: true,
+    pageFits: true,
+  });
+});
 test("entry validation preserves math state; keyboard values remain on the grid", async ({
   page,
 }) => {

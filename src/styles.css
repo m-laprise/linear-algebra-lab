@@ -587,19 +587,9 @@
 .math-block .katex-display {
   margin: 16px 0;
 }
-.column-terms {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
-  gap: 14px;
-  margin-top: 16px;
-}
-.column-terms > div {
-  border-top: 2px solid;
-  padding: 12px 0 0;
-  display: grid;
-  gap: 12px;
-  font-size: 12px;
-  overflow-x: auto;
+.calculation .katex-display {
+  width: max-content;
+  min-width: 100%;
 }
 .transpose-stats {
   margin-top: 15px;

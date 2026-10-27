@@ -10,6 +10,8 @@ Reduced BigInt fractions represent all mathematical values. Gaussian elimination
 
 The Matrices tab displays one operator at a time: A, A⁻¹, or Aᵀ. Its matrix readout, rank, determinant, columns, output vector, span, and transformed unit shape all use that same operator. The source A stays separately labeled and editable. Derived columns are read-only. Each operation retains its own editable input: x, y, or u. The inverse check shows A(A⁻¹y) = y; singular and rectangular matrices show an explanation without an inverse plot. Transpose entry correspondence can be expanded to trace Aᵢⱼ to (Aᵀ)ⱼᵢ. Changing shape resets the matrix to a rectangular diagonal of ones, the inputs, and the operation.
 
+“Calculating the output vector” displays a single numerical sum: each input coordinate times its corresponding column, followed by the output vector. Column colors match the output plot. Negative coefficients are parenthesized, and calculated fractions stay exact. The equation uses the currently displayed operator, including inverse and transpose. Long equations scroll within the panel on narrow screens.
+
 The Bases tab uses `v = Bc`, with v held fixed as B changes. A dependent B is explicitly not a basis; unique coordinates are not shown. The right panel is labeled read-only and its axes are c₁, c₂, c₃: it displays calculated coefficients, including exact fractions outside the editable half-unit grid. Edit B or v in the left panel to change these coefficients.
 
 OLS uses fixed X with rows `(1,−1), (1,0), (1,1)`. Fitted values, coefficients, and residuals use exact fractions. The residual arrow represents the displacement from the fitted vector to the response; its displayed coordinates are the residual itself.

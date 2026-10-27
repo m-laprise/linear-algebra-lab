@@ -461,3 +461,53 @@ Inverse now displays A⁻¹’s own matrix, columns, transformed unit shape, sta
 
 Changes are pushed to the application repository. The academic website remains unchanged. Please review the preview and let me know whether to proceed with website integration or revise further.
 
+[2026-10-16T15:53:21-04:00] User
+In the matrix view, I don't understand the "Linear combination of columns", its content and its purpose
+
+[2026-10-16T15:53:21-04:00] Assistant
+I’ll check the current panel and explain how its equations relate to the plotted vectors.
+
+[2026-10-16T15:53:59-04:00] Assistant
+Its purpose is to connect the two interpretations you wanted: **a matrix transforms a vector, and that transformation combines the matrix’s columns**. The current panel does not explain this clearly enough.
+
+For a matrix with columns $a_1$ and $a_2$, multiplication means
+
+$$Ax=x_1a_1+x_2a_2.$$
+
+Each coordinate of the input vector scales the corresponding column; adding these scaled columns gives the output vector. For example,
+
+$$
+A=\begin{bmatrix}1&1\\0&1\end{bmatrix},\qquad
+x=\begin{bmatrix}2\\1\end{bmatrix}
+$$
+
+produces
+
+$$
+Ax=2\begin{bmatrix}1\\0\end{bmatrix}
++1\begin{bmatrix}1\\1\end{bmatrix}
+=\begin{bmatrix}3\\1\end{bmatrix}.
+$$
+
+The current panel presents this in separate pieces:
+
+- **Top equation:** the general sum and its calculated result.
+- **Each colored block:** a column, followed by that column multiplied by its input coordinate. Colors match the columns in the output plot.
+- **The notation $Ae_j=a_j$:** transforming the standard unit vector $e_j$ produces column $j$ of the matrix.
+
+The weakness is that it introduces unexplained symbols and separates the individual contributions from their sum. The plot shows the original columns and final output, but **does not show the scaled columns being added**, so the visual connection is incomplete.
+
+I would simplify the panel to **“Calculating the output vector”**, add the sentence “Multiply each column by the corresponding input coordinate, then add,” and display one explicit numerical sum like the example above. The $Ae_j$ notation can be omitted here.
+
+[2026-10-27T09:32:06-04:00] User
+go ahead
+
+[2026-10-27T09:32:06-04:00] Assistant
+I’ll replace the panel with a short explanation and an explicit numerical sum, then check it across matrix sizes and operation views.
+
+[2026-10-27T09:33:41-04:00] Assistant
+The panel now shows one numerical calculation, with column colors matching the output plot. It uses the selected operator’s columns in inverse and transpose views, and keeps negative coefficients and fractions explicit.
+
+[2026-10-27T09:36:20-04:00] Assistant
+The updated panel passes the browser checks, including signed inputs, inverse fractions, and long equations on narrow screens. All 354 unit tests and 52 browser tests pass. I’m refreshing the Hugo preview; the academic website is unchanged.
+
