@@ -643,3 +643,6 @@ The first browser checks confirm that the math and dragging still work with the 
 [2026-10-27T11:08:34-04:00] Assistant
 All 354 unit tests and 58 browser tests now pass across Chromium, Firefox, and WebKit. The Hugo integration checks pass too. I’m finishing the visual review and updating the release checklist for the simpler starting views.
 
+[2026-10-27T11:13:51-04:00] Assistant
+The revised preview is ready for review. It now opens with a simple stretch, compares coordinates explicitly in Bases, and explains the regression plot using observation labels. I’m finishing the repository checks; the academic website remains untouched.
+

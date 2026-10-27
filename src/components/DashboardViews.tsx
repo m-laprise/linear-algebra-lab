@@ -321,7 +321,7 @@ export function Matrices({ s, dispatch }: Props) {
           </select>
         </label>
         <MatrixEditor values={s.a} name="A" onChange={(a) => patch({ a })} />
-        {s.operation !== "original" && preset?.description && (
+        {preset?.description && (
           <p className="example-description">{preset.description}</p>
         )}
         <details className="disclosure">
@@ -367,9 +367,6 @@ export function Matrices({ s, dispatch }: Props) {
         <a className="mobile-controls-link" href="#matrix-controls">
           Edit matrix or choose an example ↓
         </a>
-        {s.operation === "original" && preset?.description && (
-          <p>{preset.description}</p>
-        )}
         {s.operation !== "original" && (
           <section
             className="operator-summary"
