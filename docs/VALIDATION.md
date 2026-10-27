@@ -13,7 +13,7 @@ Initial validation: 2026-10-16. Beginner-interface revision validated: 2026-10-2
 - The documented container startup script was exercised, including dependency-volume ownership and installation as the host UID/GID.
 - Hugo **0.123.3 extended**, matching the academic site's configured version, builds successfully using an isolated copy of the website. The application is served at `/linear-algebra/` with the existing navigation/header. All three browser engines verified the single active Teaching material item, preserved Teaching item, asset requests, reload, rectangular transpose, and mobile navigation.
 
-The preceding calculation-panel revision passed all checks in a clean GitHub Actions container: [successful CI run](https://github.com/m-laprise/linear-algebra-lab/actions/runs/40513497119), code commit `3eadb04`.
+The beginner-interface revision passed all checks in a clean GitHub Actions container: [successful CI run](https://github.com/m-laprise/linear-algebra-lab/actions/runs/40528908021), code commit `58db9b4`.
 
 ## Visual review and remaining review
 

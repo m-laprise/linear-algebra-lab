@@ -646,3 +646,19 @@ All 354 unit tests and 58 browser tests now pass across Chromium, Firefox, and W
 [2026-10-27T11:13:51-04:00] Assistant
 The revised preview is ready for review. It now opens with a simple stretch, compares coordinates explicitly in Bases, and explains the regression plot using observation labels. I’m finishing the repository checks; the academic website remains untouched.
 
+
+[2026-10-27T11:16:49-04:00] Assistant
+The visual review and Hugo integration checks are complete. GitHub is running the final browser checks in a clean container; the local suite has passed in all three browsers.
+
+[2026-10-27T11:17:35-04:00] Assistant
+Implemented. [Open the updated preview](http://localhost:5180/linear-algebra/).
+
+- Starts with a simple stretch; optional graphics, statistics, and operations stay collapsed.
+- Clearly labels editable inputs and calculated outputs.
+- Bases compares two coordinate descriptions of the same vector.
+- Regression explains the observations, fitted values, and residual before showing formulas.
+- Mobile puts plots first, with a link to the editing controls.
+
+All **354 unit tests and 58 browser tests pass**, including [GitHub CI](https://github.com/m-laprise/linear-algebra-lab/actions/runs/40528908021). Hugo integration checks also pass.
+
+The academic website remains unchanged. Please review the preview and share feedback before website integration or deployment.
