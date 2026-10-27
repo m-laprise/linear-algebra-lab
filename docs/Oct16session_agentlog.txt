@@ -511,3 +511,16 @@ The panel now shows one numerical calculation, with column colors matching the o
 [2026-10-27T09:36:20-04:00] Assistant
 The updated panel passes the browser checks, including signed inputs, inverse fractions, and long equations on narrow screens. All 354 unit tests and 52 browser tests pass. I’m refreshing the Hugo preview; the academic website is unchanged.
 
+[2026-10-27T09:37:45-04:00] Assistant
+The [Hugo preview](http://localhost:5180/linear-algebra/) now has the simplified panel, and the application repository is updated. GitHub CI is running its final checks.
+
+[2026-10-27T09:39:28-04:00] Assistant
+GitHub’s build and mathematical checks have passed. Its browser tests are still running; the local checks and preview review are complete.
+
+[2026-10-27T09:40:01-04:00] Assistant
+Updated the [preview](http://localhost:5180/linear-algebra/).
+
+The panel is now **“Calculating the output vector”**, with one explanatory sentence and one numerical sum. Column colors match the plot, and the calculation follows the selected matrix, inverse, or transpose.
+
+All **354 unit tests and 52 browser tests pass**, along with GitHub CI. The academic website remains unchanged, pending your review.
+
