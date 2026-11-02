@@ -677,3 +677,30 @@ The published `/linear-algebra/` page returns 404, and neither website repositor
 
 [2026-11-02T09:52:57-05:00] Assistant
 The standalone preview passes all 354 unit tests and 58 browser tests, and the build succeeds. I’m now removing generated files and Docker resources, then publishing the closure documentation. The source, tests, and project history will remain in the repository.
+
+[2026-11-02T09:54:56-05:00] Assistant
+The README and repository description are updated on GitHub. Cleanup is complete: generated files and preview containers are gone, and removing the project’s Docker build cache reclaimed about 8 GB. Nothing is left running. The final GitHub check is still in progress.
+
+[2026-11-02T09:56:19-05:00] Assistant
+GitHub has rebuilt the environment from scratch and passed the algebra and build checks. The browser suite is still running. The repository is ready to close once that finishes.
+
+[2026-11-02T09:57:44-05:00] Assistant
+Updated and pushed the [README](https://github.com/m-laprise/linear-algebra-lab#readme) to identify this as a **closed experiment demonstrating AI-agent capabilities**.
+
+The dashboard had never been published on the academic website. I removed the unused Hugo integration and isolated website preview.
+
+To start a standalone preview from the repository:
+
+```sh
+sh scripts/dev.sh
+```
+
+Then open http://localhost:5173/linear-algebra/. To stop and remove its containers and dependencies:
+
+```sh
+docker compose down --volumes --remove-orphans
+```
+
+Removed temporary files, generated output, project containers, volumes, images, and about 8 GB of build cache. Nothing remains running. Source, tests, and documentation are preserved; the working tree is clean.
+
+All **354 unit tests, 58 browser tests, and GitHub CI passed**.
