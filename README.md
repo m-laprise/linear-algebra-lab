@@ -1,60 +1,59 @@
 # Linear Algebra Lab
 
-A small interactive dashboard for exploring matrices as linear transformations and collections of column vectors, coordinate systems, and bases. Supports every matrix shape from 1×1 through 3×3, with 1D, 2D, and rotatable 3D views.
+**Closed experiment — AI-agent demonstration only.** This repository records an experiment in using AI coding agents to build an interactive dashboard. It is retained to demonstrate the agents’ capabilities and the role of human direction and review. It is not a released teaching resource, is not part of the academic website, and is no longer under active development.
 
-**Features:** exact rank and determinant; bounded half-unit editing; named transformations; optional inverse and transpose views; basis coordinates; a hidden-by-default least-squares projection example; reset; keyboard and numeric alternatives to dragging.
+The dashboard explores small matrices, transformations, coordinates, and bases, with an optional regression example. Its source, tests, and development conversations remain available for inspection. The code was generated with GPT-6-Astra through OpenAI Codex CLI, with human interventions during design and development. The [prompts and responses](docs/Oct16session_agentlog.txt) document that process. The dashboard itself retains its original project caption.
 
-The dashboard starts with a 2D stretch and a simple input/output comparison. Columns and their numerical sum, unit shapes, span shading, rank/determinant, and other operations are available on request. Coordinates and bases starts with an oblique basis and a read-only coordinate comparison; a separate coordinate plot is optional.
+## Local preview
 
-Inverse and transpose each display their own matrix, columns, transformed unit shape, statistics, and editable input. The source matrix A remains editable. In Coordinates and bases, edit the reference arrows or vector; the table displays calculated coefficients. Reset restores initial values while keeping the active tab.
-
-**Repository:** https://github.com/m-laprise/linear-algebra-lab
-
-**Website path:** `/linear-algebra/` on the academic Hugo site.
-
-## Run and test in Docker
-
-Requires Docker and Docker Compose. No host Node, npm, Python, or Hugo installation is needed.
+Run these commands from this repository. Docker with Docker Compose must be running; no host Node, npm, Python, or Hugo installation is needed.
 
 ```sh
 sh scripts/dev.sh
-# Open http://localhost:5173/linear-algebra/
+```
+
+Open **http://localhost:5173/linear-algebra/**. This is a standalone local dashboard; it does not use or modify the academic website. The first run builds the development image and installs the locked dependencies, so it can take several minutes. Later runs reuse Docker's build cache.
+
+To stop the preview and remove its containers, network, and dependency volume:
+
+```sh
+docker compose down --volumes --remove-orphans
+```
+
+The same startup command recreates everything needed on the next run. To also remove the cached application image:
+
+```sh
+docker image rm linear-algebra-lab-lab
+```
+
+The service uses your UID/GID, drops Linux capabilities, prevents privilege escalation, and publishes its port only on localhost. Source files are mounted into `/workspace`; dependencies live in a Docker volume. Neither SSH keys nor the Docker socket is mounted into the application container.
+
+## Tests and build
+
+With the local preview running:
+
+```sh
 docker compose exec lab npm test
 docker compose exec lab npm run test:e2e
 docker compose exec lab npm run build
-docker compose down
 ```
 
-The development service uses your UID/GID, drops Linux capabilities, prevents privilege escalation, and publishes its port only on localhost. Source files are mounted into `/workspace`; dependencies live in a Docker volume. A one-shot initialization service can change ownership of that dependency volume. Neither SSH keys nor the Docker socket is mounted into the application container.
-
-The dependency lockfile pins the JavaScript environment. The Docker image includes SymPy and all three Playwright browser engines. Rebuild after changing dependencies. Regenerate the independent mathematical fixtures with:
+The container includes SymPy and Chromium, Firefox, and WebKit. To regenerate the independent mathematical fixtures:
 
 ```sh
 docker compose exec lab python3 scripts/generate-fixtures.py
 ```
 
-## Hugo integration
+The build writes `dist/`; browser tests write `test-results/`. These are generated, ignored files and can be deleted after use. Automated checks are part of the experiment's record; they do not establish suitability for classroom use.
 
-Build with `npm run build` inside the container. Then run the staging script inside that container, giving it a **mounted Hugo copy**:
-
-```sh
-docker compose exec lab node scripts/stage-hugo.mjs .preview/hugo-source
-```
-
-The script copies the content page, custom layout, and hashed assets into Hugo; writes `data/linear_algebra.json`; and adds a Teaching material navigation entry. The custom layout inherits the website's real base layout and header. It marks the corresponding navigation item active with `aria-current="page"`. The application source stays in this repository.
-
-The staging script does not commit, push, build, or publish the website. Review the generated files and the [human release checklist](docs/HUMAN_RELEASE_CHECKLIST.md) before approving website changes. The production build uses `/linear-algebra/` as its asset base; a standalone GitHub Pages project deployment under a different prefix requires a different Vite base.
-
-## Documentation
+## Project record
 
 - [Mathematical and interaction design](docs/DESIGN.md)
-- [Validation record](docs/VALIDATION.md)
-- [Human release checklist](docs/HUMAN_RELEASE_CHECKLIST.md)
+- [Validation and closure record](docs/VALIDATION.md)
+- [Original human review checklist (not completed)](docs/REVIEW_CHECKLIST.md)
 - [Session prompts and responses](docs/Oct16session_agentlog.txt)
 
-## About this dashboard
-
-This interactive dashboard serves both as a teaching tool to introduce matrices and linear algebra, as well as a demonstration for students of coding with AI agents. The code for this dashboard was generated by GPT-6-Astra using OpenAI Codex CLI, with human-in-the-loop interventions at every substantive step in the design and development process. This is an example of a simple, single-session task completed without any AGENTS.md file to tailor model behavior. The prompts used for the project are available in the repository's documentation.
+The academic-site integration and its temporary preview were removed when the experiment was closed. No website deployment is planned.
 
 ## License
 

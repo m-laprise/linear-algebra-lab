@@ -662,3 +662,18 @@ Implemented. [Open the updated preview](http://localhost:5180/linear-algebra/).
 All **354 unit tests and 58 browser tests pass**, including [GitHub CI](https://github.com/m-laprise/linear-algebra-lab/actions/runs/40528908021). Hugo integration checks also pass.
 
 The academic website remains unchanged. Please review the preview and share feedback before website integration or deployment.
+
+[2026-11-02T09:47:53-05:00] User
+I decided to not go ahead with this experiment. Edit to readme to the dedicated github to make clear that this is only an experiment and demonstration about the capabilities of AI agents. Then remove it from the academic website. Make it so that when working inside the linalg repo, one can spin up a local preview version of the dashboard. Then clean all temporary and stale files so that we can close the project.
+
+[2026-11-02T09:47:53-05:00] Assistant
+I’ll update the README to describe the project as an AI-agent experiment, check for any academic-site integration to remove, and keep a documented local preview. Then I’ll clean up temporary files and project-specific containers.
+
+[2026-11-02T09:48:54-05:00] Assistant
+I found no dashboard integration in the academic website’s source. The website-style preview was running from an isolated copy, so I’m checking the published site before removing that preview and its integration tooling. The dashboard already has a standalone Docker launcher that I’ll verify and document.
+
+[2026-11-02T09:51:19-05:00] Assistant
+The published `/linear-algebra/` page returns 404, and neither website repository contains the dashboard. There’s nothing live to remove. I’ve removed the Hugo preview and integration tooling, updated the project’s status, and successfully restarted the standalone preview with a fresh dependency volume.
+
+[2026-11-02T09:52:57-05:00] Assistant
+The standalone preview passes all 354 unit tests and 58 browser tests, and the build succeeds. I’m now removing generated files and Docker resources, then publishing the closure documentation. The source, tests, and project history will remain in the repository.

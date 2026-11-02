@@ -1,6 +1,6 @@
-# Human release checklist
+# Historical human review checklist
 
-Status: **awaiting human review**. Automated tests and agent screenshot inspection do not complete this checklist. Use the actual Hugo preview at `/linear-algebra/`.
+Status: **not completed; project closed on 2026-11-02**. This checklist is retained as part of the experiment's record, not as a pending release task. Automated tests and agent screenshot inspection did not complete it. The remaining dashboard can be inspected using the standalone local preview documented in the README.
 
 - [ ] On first load, identify the editable input, calculated output, and matrix without opening help. Check A = diag(2, 1), input (1, 1), and output (2, 1). Only input/output arrows should be plotted; columns, unit shapes, shading, and statistics begin hidden.
 - [ ] Open columns/calculation, unit shape, and rank/determinant independently. Check opening them does not change values. Enable span shading, then close the statistics section; the shading must disappear.
@@ -24,9 +24,5 @@ Status: **awaiting human review**. Automated tests and agent screenshot inspecti
 - [ ] Test keyboard navigation (including tab arrow keys), focus visibility, a screen reader, and touch dragging on an actual mobile device. Values and labels must remain understandable without color.
 - [ ] On mobile, edit the input beside its plot, then use the visible link to reach the matrix/reference-arrow editor. Check calculated results remain easy to locate and long numerical equations scroll completely.
 - [ ] Test desktop and mobile layouts in Chrome, Firefox, and Safari. Inspect equations and controls for clipping at narrow widths and browser zoom 200%.
-- [ ] On the Hugo preview, verify the existing navigation, active Teaching material tab, mobile menu, source link, and exact explanatory caption.
-- [ ] After approved deployment, load and reload the public `/linear-algebra/` URL; confirm no missing assets or console errors.
 
-Reviewer: __________________  Date: __________________
-
-Website publication requires the owner's approval after review.
+Website-specific release checks are no longer applicable; the Hugo integration has been removed.

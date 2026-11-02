@@ -1,6 +1,6 @@
 # Implementation notes
 
-The browser is the entire application; there is no backend or data collection in the dashboard. The Hugo site retains its existing site-wide behavior.
+This document describes the implementation retained from the closed AI-agent experiment. The browser is the entire application; there is no backend or data collection in the dashboard. The preview runs locally and independently of the academic website.
 
 ## Mathematics
 
@@ -42,7 +42,6 @@ Clipping occurs in mathematical coordinates before projection. A vector leaving 
 - `src/App.tsx`: navigation, introductions, optional OLS toggle, and the caption.
 - `src/components/DashboardViews.tsx`: matrix, basis, and regression views and their contextual explanations.
 - `tests/`: independent SymPy fixtures, algebra/state/geometry tests, browser tests.
-- `integration/hugo/`: Hugo content and layout using the site's existing base template.
-- `scripts/stage-hugo.mjs`: copy a production build into a Hugo checkout or isolated copy.
+- `scripts/dev.sh`: build the Docker environment and start the standalone local preview.
 
 The application CSS is scoped beneath `.lab` / `#linear-algebra-root`. It uses local bundled fonts for equations. No CDN is required at runtime. Reset restores initial values, hidden optional views, and default cameras while preserving the active Matrices or Bases tab. Named-example menus reflect the current matrix, switching to Custom when it no longer matches an example. The OLS toggle sits below the main dashboard, immediately above the example. State is intentionally ephemeral and is not stored or sent anywhere.
